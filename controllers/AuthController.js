@@ -69,6 +69,14 @@ class AuthController {
       const { refreshToken } = req.cookies
       const result = await AuthService.logout(refreshToken)
 
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        domain: process.env.NODE_ENV === 'production' ? '.yourdomain.com' : undefined,
+        path: '/',
+      })
+
       return res.json(result)
     } catch (error) {
       console.log('Error in logout controller:', error)

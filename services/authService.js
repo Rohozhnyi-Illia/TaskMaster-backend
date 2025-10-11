@@ -90,14 +90,6 @@ class AuthService {
       if (!refreshToken) return Error('No token provided')
       await TokenService.removeToken(refreshToken)
 
-      res.clearCookie('refreshToken', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-        domain: process.env.NODE_ENV === 'production' ? '.yourdomain.com' : undefined,
-        path: '/',
-      })
-
       return { message: 'Successfully logged out' }
     } catch (error) {
       console.error('Error in logout service:', error)

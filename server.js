@@ -3,7 +3,9 @@ const express = require('express')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const mongoose = require('mongoose')
+const initDeadlineChecker = require('./crons/checkDeadlines')
 const authRoute = require('./routers/authRoute')
+const notificationRoute = require('./routers/notificationRoute')
 
 const app = express()
 const PORT = process.env.PORT || 2000
@@ -28,6 +30,7 @@ app.use(
 app.use(express.json())
 app.use(cookieParser())
 app.use('/api/auth', authRoute)
+app.use('/api/notification', notificationRoute)
 
 const startServer = async () => {
   try {
@@ -38,6 +41,7 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`Server was started on port: ${PORT}`)
     })
+    initDeadlineChecker()
   } catch (error) {
     console.error(error)
     process.exit(0)

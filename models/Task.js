@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const TaskSchema = new mongoose.Schema(
+const TaskModel = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -21,20 +21,11 @@ const TaskSchema = new mongoose.Schema(
       enum: ['High', 'Middle', 'Low'],
       required: true,
     },
-    deadline: {
-      type: Date,
-      required: true,
-    },
-    remainingTime: {
-      type: Number,
-      default: 24,
-    },
-    timeTracker: {
-      type: Boolean,
-      default: false,
-    },
+    deadline: { type: Date, required: true },
+    remainingTime: { type: Number, default: 24 },
+    timeTracker: { type: Boolean, default: false },
   },
   { timestamps: true }
 )
 
-module.exports = mongoose.model('Task', TaskSchema)
+module.exports = mongoose.model('Task', TaskModel)

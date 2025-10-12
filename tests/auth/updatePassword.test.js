@@ -25,7 +25,7 @@ describe('Auth: Password Update', () => {
 
   it('should update the password when newPassword and repeatPassword match', async () => {
     const res = await request(app)
-      .post('/auth/update-password')
+      .post('/api/auth/update-password')
       .send({
         email: testEmail,
         newPassword: newPassword,
@@ -38,7 +38,7 @@ describe('Auth: Password Update', () => {
 
   it('should return 500 when newPassword and repeatPassword do not match', async () => {
     await request(app)
-      .post('/auth/update-password')
+      .post('/api/auth/update-password')
       .send({
         email: testEmail,
         newPassword: newPassword,

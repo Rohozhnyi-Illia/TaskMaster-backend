@@ -23,7 +23,7 @@ describe('Auth: Login', () => {
 
   it('should login an existing user and set refreshToken cookie', async () => {
     const res = await request(app)
-      .post('/auth/login')
+      .post('/api/auth/login')
       .send({ email: testEmail, password: testPassword })
       .expect(200)
 

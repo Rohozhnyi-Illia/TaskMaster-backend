@@ -29,7 +29,7 @@ describe('Auth: Registration', () => {
 
   it('should register a new user and set refreshToken cookie', async () => {
     const res = await request(app)
-      .post('/auth/register')
+      .post('/api/auth/register')
       .send({ email: testEmail, password: testPassword })
       .expect(200)
 

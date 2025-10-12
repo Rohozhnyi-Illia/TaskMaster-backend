@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 const initDeadlineChecker = require('./crons/checkDeadlines')
 const authRoute = require('./routers/authRoute')
 const notificationRoute = require('./routers/notificationRoute')
+const taskRoute = require('./routers/taskRoute')
 
 const app = express()
 const PORT = process.env.PORT || 2000
@@ -31,6 +32,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use('/api/auth', authRoute)
 app.use('/api/notification', notificationRoute)
+app.use('/api/tasks', taskRoute)
 
 const startServer = async () => {
   try {

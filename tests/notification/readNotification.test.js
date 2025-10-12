@@ -33,6 +33,7 @@ describe('Notifications API - Mark As Read', () => {
   afterAll(async () => {
     await UserModel.deleteOne({ _id: userId })
     await NotificationModel.deleteMany({ user: userId })
+    console.log('User was deleted')
     await mongoose.connection.close()
   })
 

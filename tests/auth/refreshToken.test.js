@@ -19,7 +19,7 @@ describe('Auth: Refresh Token', () => {
     await UserModel.create({ email: testEmail, password: hashPassword })
 
     const loginRes = await request(app)
-      .post('/auth/login')
+      .post('/api/auth/login')
       .send({ email: testEmail, password: testPassword })
       .expect(200)
 
@@ -35,7 +35,7 @@ describe('Auth: Refresh Token', () => {
 
   it('should refresh access token using refreshToken cookie', async () => {
     const res = await request(app)
-      .post('/auth/refresh')
+      .post('/api/auth/refresh')
       .set('Cookie', refreshCookie)
       .expect(200)
 

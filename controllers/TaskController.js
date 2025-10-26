@@ -3,10 +3,25 @@ const UserModel = require('../models/User')
 const TaskService = require('../services/taskService')
 
 class TaskController {
+  async getAllTasks(req, res) {
+    try {
+      const userId = req.user._id
+      const tasks = await TaskService.getAllTasks(userId)
+
+      res.status(200).json(tasks)
+    } catch (error) {
+      console.error('Error in getAllTasks controller:', error)
+      res.status(500).json({
+        message: 'Internal server error',
+        error: error.message,
+      })
+    }
+  }
+
   async createTask(req, res) {
     try {
       const userId = req.user._id
-      const { task, status, category, deadline, remainingTime, timeTracker } = req.body
+      const { task, status, category, deadline, remainingTime } = req.body
 
       const result = await TaskService.createTask({
         userId,
@@ -15,7 +30,6 @@ class TaskController {
         category,
         deadline,
         remainingTime,
-        timeTracker,
       })
 
       res.status(201).json(result)
@@ -32,6 +46,24 @@ class TaskController {
       res.status(200).json({ message: 'Task deleted successfully', task: deletedTask })
     } catch (error) {
       console.error('Error in deleteTask controller:', error)
+      res.status(500).json({ message: 'Internal server error', error: error.message })
+    }
+  }
+
+  async updateStatus(req, res) {
+    try {
+      const userId = req.user._id
+      const { id } = req.params
+      const { status } = req.body
+
+      const updatedTask = await TaskService.updateStatus(id, userId, status)
+
+      res.status(200).json({
+        message: 'Task status updated successfully',
+        task: updatedTask,
+      })
+    } catch (error) {
+      console.error('Error in updateStatus controller:', error)
       res.status(500).json({ message: 'Internal server error', error: error.message })
     }
   }

@@ -13,8 +13,14 @@ const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ message: 'Token missing' })
     }
 
-    const payload = jwt.verify(token, process.env.JWT_ACCESS_SECRET)
-    if (!payload) {
+    let payload
+    try {
+      payload = jwt.verify(token, process.env.JWT_ACCESS_SECRET)
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ message: 'Token expired', expired: true })
+      }
+
       return res.status(401).json({ message: 'Invalid token' })
     }
 

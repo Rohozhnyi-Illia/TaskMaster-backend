@@ -29,8 +29,13 @@ class NotificationController {
   async delete(req, res) {
     try {
       const { id } = req.params
-      await NotificationService.deleteNotification(id)
-      res.status(200).json({ message: 'Notification deleted successfully' })
+      const deletedNotification = await NotificationService.deleteNotification(id)
+
+      if (!deletedNotification) {
+        return res.status(404).json({ message: 'Notification not found' })
+      }
+
+      res.status(200).json({ success: true, data: deletedNotification })
     } catch (error) {
       console.error('Error deleting notification:', error)
       res.status(500).json({ message: 'Internal server error' })

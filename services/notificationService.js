@@ -27,6 +27,16 @@ class NotificationService {
         type = 'reminder'
       }
 
+      if (task.remainingTime && task.createdAt) {
+        const reminderDate = new Date(
+          task.createdAt.getTime() + task.remainingTime * 60 * 60 * 1000
+        )
+        if (now >= reminderDate && !message) {
+          message = `Reminder: Your task "${task.task}" is due!`
+          type = 'reminder'
+        }
+      }
+
       if (message && type) {
         const alreadyExists = await NotificationModel.findOne({
           task: task._id,
@@ -39,8 +49,8 @@ class NotificationService {
             task: task._id,
             message,
             type,
+            isRead: false,
           })
-          console.log(`📩 Notification created for ${task.user.email}: ${message}`)
         }
       }
     }

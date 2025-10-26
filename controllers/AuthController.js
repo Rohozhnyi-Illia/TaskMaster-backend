@@ -3,8 +3,8 @@ const AuthService = require('../services/authService')
 class AuthController {
   async register(req, res) {
     try {
-      const { email, password } = req.body
-      const result = await AuthService.register(email, password)
+      const { email, password, name } = req.body
+      const result = await AuthService.register(email, password, name)
 
       res.cookie('refreshToken', result.refreshToken, {
         httpOnly: true,
@@ -18,6 +18,7 @@ class AuthController {
       res.status(200).json({
         id: result.id,
         email: result.email,
+        name: result.name,
         accessToken: result.accessToken,
       })
     } catch (error) {
@@ -44,6 +45,7 @@ class AuthController {
         id: result.id,
         email: result.email,
         accessToken: result.accessToken,
+        name: result.name,
       })
     } catch (error) {
       console.log('Error in login controller:', error)
@@ -88,6 +90,15 @@ class AuthController {
     try {
       const { refreshToken } = req.cookies
       const result = await AuthService.refreshToken(refreshToken)
+
+      res.cookie('refreshToken', result.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        domain: process.env.NODE_ENV === 'production' ? '.yourdomain.com' : undefined,
+        path: '/',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      })
 
       return res.json(result)
     } catch (error) {

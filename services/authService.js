@@ -3,9 +3,9 @@ const TokenService = require('./tokenService')
 const bcrypt = require('bcrypt')
 
 class AuthService {
-  async register(email, password) {
+  async register(email, password, name) {
     try {
-      if (!email || !password) {
+      if (!email || !password || !name) {
         throw new Error('Incomplete data')
       }
 
@@ -15,7 +15,7 @@ class AuthService {
       }
 
       const hashPassword = await bcrypt.hash(password, 10)
-      const newUser = await UserModel.create({ email, password: hashPassword })
+      const newUser = await UserModel.create({ email, password: hashPassword, name })
 
       const tokens = TokenService.generateToken({ id: newUser._id })
       await TokenService.saveToken(newUser._id, tokens.refreshToken)
@@ -25,6 +25,7 @@ class AuthService {
         email: newUser.email,
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
+        name: newUser.name,
       }
     } catch (error) {
       console.error('Error in register service:', error)
@@ -56,6 +57,7 @@ class AuthService {
         email: existingUser.email,
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
+        name: existingUser.name,
       }
     } catch (error) {
       console.error('Error in login service:', error)

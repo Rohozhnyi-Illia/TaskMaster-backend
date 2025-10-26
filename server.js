@@ -9,7 +9,7 @@ const notificationRoute = require('./routers/notificationRoute')
 const taskRoute = require('./routers/taskRoute')
 
 const app = express()
-const PORT = process.env.PORT || 2000
+const PORT = process.env.PORT
 const allowedOrigins = ['https://prod-domen.com', 'http://localhost:3000']
 
 app.use(

@@ -6,24 +6,27 @@ const TaskModel = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+      immutable: true,
     },
     task: {
       type: String,
       required: true,
+      immutable: true,
     },
     status: {
       type: String,
-      enum: ['Active', 'Done', 'In-progress', 'Archived', 'Blocked'],
+      enum: ['Active', 'Done'],
       required: true,
     },
     category: {
       type: String,
       enum: ['High', 'Middle', 'Low'],
       required: true,
+      immutable: true,
     },
-    deadline: { type: Date, required: true },
-    remainingTime: { type: Number, default: 24 },
-    timeTracker: { type: Boolean, default: false },
+    deadline: { type: Date, required: true, immutable: true },
+    remainingTime: { type: Number, default: 24, immutable: true },
+    timeTracker: { type: Boolean, default: true, immutable: true },
   },
   { timestamps: true }
 )

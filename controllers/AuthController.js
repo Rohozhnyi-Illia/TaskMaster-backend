@@ -6,6 +6,23 @@ class AuthController {
       const { email, password, name } = req.body
       const result = await AuthService.register(email, password, name)
 
+      res.status(200).json({
+        id: result.id,
+        email: result.email,
+        name: result.name,
+        message: result.message,
+      })
+    } catch (error) {
+      console.log('Error in register controller:', error)
+      res.status(500).json({ message: 'Internal server error', error: error.message })
+    }
+  }
+
+  async verifyEmail(req, res) {
+    try {
+      const { email, verifyCode } = req.body
+      const result = await AuthService.verifyEmail(email, verifyCode)
+
       res.cookie('refreshToken', result.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -14,14 +31,9 @@ class AuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
 
-      res.status(200).json({
-        id: result.id,
-        email: result.email,
-        name: result.name,
-        accessToken: result.accessToken,
-      })
+      res.status(200).json(result)
     } catch (error) {
-      console.log('Error in register controller:', error)
+      console.error('Error in verifyEmail controller:', error)
       res.status(500).json({ message: 'Internal server error', error: error.message })
     }
   }
@@ -55,7 +67,6 @@ class AuthController {
     try {
       const { email } = req.body
       const result = await AuthService.updatePassword(email)
-      if (!result) return res.status(400).json({ message: 'Password update failed' })
 
       return res.json(result)
     } catch (error) {
@@ -73,7 +84,6 @@ class AuthController {
         newPassword,
         repeatPassword
       )
-      if (!result) return res.status(400).json({ message: 'Password update failed' })
 
       return res.json(result)
     } catch (error) {

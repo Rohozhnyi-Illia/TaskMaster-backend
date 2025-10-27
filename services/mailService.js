@@ -36,7 +36,7 @@ class MailService {
         <div style="max-width:600px; margin:0 auto; background:white; border-radius:12px; overflow:hidden; box-shadow:0 0 10px rgba(0,0,0,0.1);">
           
           <!-- Header -->
-          <div style="background:#007bff; color:white; padding:16px 24px; text-align:center;">
+          <div style="background:#140e56; color:white; padding:16px 24px; text-align:center;">
             <h2 style="margin:0; font-size:24px;">TaskMaster</h2>
           </div>
           
@@ -53,7 +53,7 @@ class MailService {
             
             <p>If you didn’t request this, please ignore this email.</p>
             
-            <a href="https://taskmaster.ink" style="display:inline-block; background:#007bff; color:white; text-decoration:none; padding:12px 24px; border-radius:8px; margin-top:20px;">
+            <a href="https://verdant-sfogliatella-0ba40c.netlify.app/" style="display:inline-block; background:#140e56; color:white; text-decoration:none; padding:12px 24px; border-radius:8px; margin-top:20px;">
               Go to TaskMaster
             </a>
           </div>

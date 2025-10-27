@@ -25,6 +25,12 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    emailActivationCode: {
+      type: String,
+    },
+    emailActivationCodeLifetime: {
+      type: Date,
+    },
   },
   { timestamps: true }
 )

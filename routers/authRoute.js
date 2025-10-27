@@ -1,10 +1,13 @@
 const express = require('express')
 const AuthController = require('../controllers/AuthController')
-const authMiddleware = require('../middlewares/authMiddleware')
 const router = express.Router()
 
 router.post('/register', (req, res) => {
   AuthController.register(req, res)
+})
+
+router.post('/verify-email', (req, res) => {
+  AuthController.verifyEmail(req, res)
 })
 
 router.post('/login', (req, res) => {

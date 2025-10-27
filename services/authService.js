@@ -1,8 +1,8 @@
 const UserModel = require('../models/User')
 const TokenService = require('./tokenService')
 const bcrypt = require('bcrypt')
-const crypto = require('crypto')
 const MailService = require('./mailService')
+const createVerifyCode = require('../helpers/createVerifyCode')
 
 class AuthService {
   async register(email, password, name) {
@@ -19,18 +19,58 @@ class AuthService {
       const hashPassword = await bcrypt.hash(password, 10)
       const newUser = await UserModel.create({ email, password: hashPassword, name })
 
-      const tokens = TokenService.generateToken({ id: newUser._id })
-      await TokenService.saveToken(newUser._id, tokens.refreshToken)
+      const code = createVerifyCode()
+      await MailService.sendMail(email, 'Email verification', code)
+      newUser.emailActivationCode = code
+      newUser.emailActivationCodeLifetime = new Date(Date.now() + 10 * 60 * 1000)
+      await newUser.save()
 
       return {
         id: newUser._id,
         email: newUser.email,
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
         name: newUser.name,
+        message: 'User registered. Please verify your email using the code sent to your inbox',
       }
     } catch (error) {
       console.error('Error in register service:', error)
+      throw error
+    }
+  }
+
+  async verifyEmail(email, verifyCode) {
+    try {
+      const existingUser = await UserModel.findOne({ email })
+      if (!existingUser) {
+        throw new Error('User not found')
+      }
+
+      if (verifyCode !== existingUser.emailActivationCode) {
+        throw new Error('Incorrect verification code')
+      }
+
+      const isCodeValid = new Date() < existingUser.emailActivationCodeLifetime
+      if (!isCodeValid) {
+        throw new Error('The code is no longer valid.')
+      }
+
+      existingUser.emailActivated = true
+      existingUser.emailActivationCode = null
+      existingUser.emailActivationCodeLifetime = null
+
+      const tokens = TokenService.generateToken({ id: existingUser._id })
+      await TokenService.saveToken(existingUser._id, tokens.refreshToken)
+      await existingUser.save()
+
+      return {
+        id: existingUser._id,
+        email: existingUser.email,
+        name: existingUser.name,
+        message: 'User registered. Please verify your email using the code sent to your inbox',
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      }
+    } catch (error) {
+      console.error('Error in verify email service:', error)
       throw error
     }
   }
@@ -44,6 +84,10 @@ class AuthService {
       const existingUser = await UserModel.findOne({ email })
       if (!existingUser) {
         throw new Error('User not found')
+      }
+
+      if (!existingUser.emailActivated) {
+        throw new Error('Email not activated')
       }
 
       const isPasswordValid = await bcrypt.compare(password, existingUser.password)
@@ -74,17 +118,10 @@ class AuthService {
         throw new Error('User not found')
       }
 
-      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-      const codeLength = 6
-      let code = ''
-
-      for (let i = 0; i < codeLength; i++) {
-        const index = crypto.randomInt(0, characters.length)
-        code += characters[index]
-      }
+      const code = createVerifyCode()
 
       existingUser.passwordResetCode = code
-      existingUser.passwordResetCodeLifetime = Date.now() + 10 * 60 * 1000
+      existingUser.passwordResetCodeLifetime = new Date(Date.now() + 10 * 60 * 1000)
 
       await MailService.sendMail(email, 'password verification', code)
 
@@ -116,7 +153,7 @@ class AuthService {
         throw new Error('Incorrect verification code')
       }
 
-      const isCodeValid = Date.now() < user.passwordResetCodeLifetime
+      const isCodeValid = new Date() < user.passwordResetCodeLifetime
       if (!isCodeValid) {
         throw new Error('The code is no longer valid.')
       }

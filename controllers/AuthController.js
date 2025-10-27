@@ -53,13 +53,31 @@ class AuthController {
 
   async updatePassword(req, res) {
     try {
-      const { email, newPassword, repeatPassword } = req.body
-      const result = await AuthService.updatePassword(email, newPassword, repeatPassword)
+      const { email } = req.body
+      const result = await AuthService.updatePassword(email)
       if (!result) return res.status(400).json({ message: 'Password update failed' })
 
       return res.json(result)
     } catch (error) {
       console.log('Error in updatePassword controller:', error)
+      res.status(500).json({ message: 'Internal server error', error: error.message })
+    }
+  }
+
+  async verifyPassword(req, res) {
+    try {
+      const { email, verifyCode, newPassword, repeatPassword } = req.body
+      const result = await AuthService.verifyPassword(
+        email,
+        verifyCode,
+        newPassword,
+        repeatPassword
+      )
+      if (!result) return res.status(400).json({ message: 'Password update failed' })
+
+      return res.json(result)
+    } catch (error) {
+      console.log('Error in verifyPassword controller:', error)
       res.status(500).json({ message: 'Internal server error', error: error.message })
     }
   }

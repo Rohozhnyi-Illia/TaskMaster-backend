@@ -15,6 +15,10 @@ router.post('/update-password', (req, res) => {
   AuthController.updatePassword(req, res)
 })
 
+router.post('/verify-password', (req, res) => {
+  AuthController.verifyPassword(req, res)
+})
+
 router.post('/logout', (req, res) => {
   AuthController.logout(req, res)
 })

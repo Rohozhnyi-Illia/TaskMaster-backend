@@ -15,6 +15,16 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    passwordResetCode: {
+      type: String,
+    },
+    passwordResetCodeLifetime: {
+      type: Date,
+    },
+    emailActivated: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 )

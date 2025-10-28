@@ -6,6 +6,10 @@ router.post('/register', (req, res) => {
   AuthController.register(req, res)
 })
 
+router.post('/re-verify-email', (req, res) => {
+  AuthController.reVerifyEmail(req, res)
+})
+
 router.post('/verify-email', (req, res) => {
   AuthController.verifyEmail(req, res)
 })

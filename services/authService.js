@@ -22,7 +22,7 @@ class AuthService {
       const code = createVerifyCode()
       await MailService.sendMail(email, 'Email verification', code)
       newUser.emailActivationCode = code
-      newUser.emailActivationCodeLifetime = new Date(Date.now() + 10 * 60 * 1000)
+      newUser.emailActivationCodeLifetime = new Date(Date.now() + 1 * 60 * 1000)
       await newUser.save()
 
       return {
@@ -75,6 +75,32 @@ class AuthService {
     }
   }
 
+  async reVerifyEmail(email) {
+    try {
+      const existingUser = await UserModel.findOne({ email })
+      if (!existingUser) {
+        throw new Error('User not found')
+      }
+
+      if (existingUser.emailActivated) {
+        throw new Error('Account already activated')
+      }
+
+      const code = createVerifyCode()
+      await MailService.sendMail(email, 'Email verification', code)
+      existingUser.emailActivationCode = code
+      existingUser.emailActivationCodeLifetime = new Date(Date.now() + 1 * 60 * 1000)
+      await existingUser.save()
+
+      return {
+        emailActivated: existingUser.emailActivated,
+      }
+    } catch (error) {
+      console.error('Error in re-verify email service:', error)
+      throw error
+    }
+  }
+
   async login(email, password) {
     try {
       if (!email || !password) {
@@ -104,6 +130,7 @@ class AuthService {
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
         name: existingUser.name,
+        emailActivated: existingUser.emailActivated,
       }
     } catch (error) {
       console.error('Error in login service:', error)
@@ -121,7 +148,7 @@ class AuthService {
       const code = createVerifyCode()
 
       existingUser.passwordResetCode = code
-      existingUser.passwordResetCodeLifetime = new Date(Date.now() + 10 * 60 * 1000)
+      existingUser.passwordResetCodeLifetime = new Date(Date.now() + 1 * 60 * 1000)
 
       await MailService.sendMail(email, 'password verification', code)
 

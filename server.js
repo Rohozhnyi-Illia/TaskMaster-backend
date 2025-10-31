@@ -39,6 +39,9 @@ app.use(cookieParser())
 app.use('/api/auth', authRoute)
 app.use('/api/notification', notificationRoute)
 app.use('/api/tasks', taskRoute)
+app.get('/api/ping', (req, res) => {
+  res.status(200).send('Server is awake')
+})
 
 const startServer = async () => {
   try {

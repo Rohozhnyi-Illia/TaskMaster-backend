@@ -68,6 +68,7 @@ class AuthController {
         email: result.email,
         accessToken: result.accessToken,
         name: result.name,
+        emailActivated: result.emailActivated,
       })
     } catch (error) {
       console.log('Error in login controller:', error)

@@ -22,7 +22,7 @@ class AuthService {
       const code = createVerifyCode()
       await MailService.sendMail(email, 'Email verification', code)
       newUser.emailActivationCode = code
-      newUser.emailActivationCodeLifetime = new Date(Date.now() + 1 * 60 * 1000)
+      newUser.emailActivationCodeLifetime = new Date(Date.now() + 15 * 60 * 1000)
       await newUser.save()
 
       return {
@@ -89,7 +89,7 @@ class AuthService {
       const code = createVerifyCode()
       await MailService.sendMail(email, 'Email verification', code)
       existingUser.emailActivationCode = code
-      existingUser.emailActivationCodeLifetime = new Date(Date.now() + 1 * 60 * 1000)
+      existingUser.emailActivationCodeLifetime = new Date(Date.now() + 15 * 60 * 1000)
       await existingUser.save()
 
       return {
@@ -148,9 +148,9 @@ class AuthService {
       const code = createVerifyCode()
 
       existingUser.passwordResetCode = code
-      existingUser.passwordResetCodeLifetime = new Date(Date.now() + 1 * 60 * 1000)
+      existingUser.passwordResetCodeLifetime = new Date(Date.now() + 15 * 60 * 1000)
 
-      await MailService.sendMail(email, 'password verification', code)
+      await MailService.sendMail(email, 'Password verification', code)
 
       await existingUser.save()
       return { message: 'The operation was successful' }

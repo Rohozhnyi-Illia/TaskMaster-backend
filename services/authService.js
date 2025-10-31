@@ -20,10 +20,16 @@ class AuthService {
       const newUser = await UserModel.create({ email, password: hashPassword, name })
 
       const code = createVerifyCode()
-      await MailService.sendMail(email, 'Email verification', code)
       newUser.emailActivationCode = code
       newUser.emailActivationCodeLifetime = new Date(Date.now() + 15 * 60 * 1000)
       await newUser.save()
+
+      Promise.race([
+        MailService.sendMail(email, 'Email verification', code),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Mail sending timeout')), 5000)
+        ),
+      ]).catch((err) => console.error('Mail error:', err))
 
       return {
         id: newUser._id,

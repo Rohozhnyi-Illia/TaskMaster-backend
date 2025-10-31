@@ -23,7 +23,6 @@ app.use(
       if (allowedOrigins.includes(origin)) {
         callback(null, true)
       } else {
-        console.warn(`❌ Blocked by CORS: ${origin}`)
         callback(new Error('Not allowed by CORS'))
       }
     },
@@ -39,8 +38,19 @@ app.use(cookieParser())
 app.use('/api/auth', authRoute)
 app.use('/api/notification', notificationRoute)
 app.use('/api/tasks', taskRoute)
-app.get('/api/ping', (req, res) => {
-  res.status(200).send('Server is awake')
+
+app.get('/ping', async (req, res) => {
+  try {
+    if (!mongoose.connection.readyState) {
+      return res.status(500).json({ message: 'DB not connected' })
+    }
+
+    await mongoose.connection.db.admin().ping()
+
+    res.status(200).json({ message: 'Server and MongoDB are awake' })
+  } catch (error) {
+    res.status(500).json({ message: 'Ping failed', error: err.message })
+  }
 })
 
 const startServer = async () => {

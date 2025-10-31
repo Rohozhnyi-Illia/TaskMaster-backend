@@ -46,7 +46,6 @@ app.get('/ping', async (req, res) => {
     }
 
     await mongoose.connection.db.admin().ping()
-
     res.status(200).json({ message: 'Server and MongoDB are awake' })
   } catch (error) {
     res.status(500).json({ message: 'Ping failed', error: err.message })

@@ -7,7 +7,6 @@ const initDeadlineChecker = require('./crons/checkDeadlines')
 const authRoute = require('./routers/authRoute')
 const notificationRoute = require('./routers/notificationRoute')
 const taskRoute = require('./routers/taskRoute')
-const MailService = require('./services/mailService')
 
 const app = express()
 const PORT = process.env.PORT
@@ -39,16 +38,6 @@ app.use(cookieParser())
 app.use('/api/auth', authRoute)
 app.use('/api/notification', notificationRoute)
 app.use('/api/tasks', taskRoute)
-
-app.get('/test-mail', async (req, res) => {
-  try {
-    await MailService.sendMail('rogozhnyiilya@gmail.com', 'Test Email', '123456')
-    res.json({ message: 'Mail sent successfully' })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: err.message })
-  }
-})
 
 app.get('/ping', async (req, res) => {
   try {

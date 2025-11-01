@@ -20,13 +20,10 @@ class AuthService {
       const newUser = await UserModel.create({ email, password: hashPassword, name })
 
       const code = createVerifyCode()
+      await MailService.sendMail(email, 'Email verification', code)
       newUser.emailActivationCode = code
       newUser.emailActivationCodeLifetime = new Date(Date.now() + 15 * 60 * 1000)
       await newUser.save()
-
-      await MailService.sendMail(email, 'Email verification', code).catch((err) =>
-        console.error('Mail send error:', err)
-      )
 
       return {
         id: newUser._id,

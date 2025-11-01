@@ -51,7 +51,7 @@ class MailService {
   }
 }
 
-export default new MailService()
+module.exports = new MailService()
 
 // require('dotenv').config()
 // const nodemailer = require('nodemailer')

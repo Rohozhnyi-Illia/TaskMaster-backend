@@ -7,6 +7,7 @@ const initDeadlineChecker = require('./crons/checkDeadlines')
 const authRoute = require('./routers/authRoute')
 const notificationRoute = require('./routers/notificationRoute')
 const taskRoute = require('./routers/taskRoute')
+const MailService = require('./services/mailService')
 
 const app = express()
 const PORT = process.env.PORT

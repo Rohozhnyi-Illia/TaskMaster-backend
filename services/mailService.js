@@ -1,4 +1,4 @@
-import axios from 'axios'
+const axios = require('axios')
 
 class MailService {
   async sendMail(to, subject, code) {

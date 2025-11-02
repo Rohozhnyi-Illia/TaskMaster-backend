@@ -38,11 +38,14 @@ git clone https://github.com/Rohozhnyi-Illia/TaskMaster-backend.git
 cd TaskMaster-backend
 npm install
 cp .env.example .env
+```
 
 ## Running
 
+```bash
 npm run dev     # development mode
 npm start       # production mode
+```
 
 Default server URL: http://localhost:9000.
 
@@ -50,9 +53,10 @@ Default server URL: http://localhost:9000.
 
 - `npm run test`
 
-##  API Endpoints
+## API Endpoints
 
 ### Auth Routes
+
 - `/api/auth/register` — register a new user
 - `/api/auth/re-verify-email` — resend verification email
 - `/api/auth/verify-email` — verify user email
@@ -65,6 +69,7 @@ Default server URL: http://localhost:9000.
 ---
 
 ### Task Routes
+
 - `/api/tasks/get-all` — get all tasks for the current user
 - `/api/tasks/add-task` — create a new task
 - `/api/tasks/:id/status` — update task status (Active / Done)
@@ -73,6 +78,7 @@ Default server URL: http://localhost:9000.
 ---
 
 ### 🔔 Notification Routes
+
 - `/api/notification/get-notification` — get user notifications
 - `/api/notification/:id/read` — mark notification as read
 - `/api/notification/:id` — delete a notification
@@ -80,6 +86,7 @@ Default server URL: http://localhost:9000.
 ---
 
 ### Utility Routes
+
 - `/ping` — checks whether the server and MongoDB are working (used by a third-party service)
 
 ---
@@ -87,8 +94,8 @@ Default server URL: http://localhost:9000.
 ## How Email Verification Works
 
 1. User registers — server generates a 6-digit code via crypto.randomInt().
-2. Code is stored in DB  and expires after 15 minutes.
-3. Code is sent via Brevo  or local SMTP during development.
+2. Code is stored in DB and expires after 15 minutes.
+3. Code is sent via Brevo or local SMTP during development.
 4. User submits the code via /verify-email.
 5. On success — account status updates to emailActivated: true.
 6. The same flow is used for password recovery.
@@ -106,4 +113,3 @@ Default server URL: http://localhost:9000.
 ## Author
 
 Illia Rohozhnyi
-```

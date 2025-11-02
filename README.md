@@ -77,7 +77,7 @@ Default server URL: http://localhost:9000.
 
 ---
 
-### 🔔 Notification Routes
+### Notification Routes
 
 - `/api/notification/get-notification` — get user notifications
 - `/api/notification/:id/read` — mark notification as read

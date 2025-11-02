@@ -55,33 +55,33 @@ Default server URL: http://localhost:9000.
 
 ## API Endpoints
 
-### Auth Routes
+### Auth Routes (`/api/auth`)
 
-- `/api/auth/register` — register a new user
-- `/api/auth/re-verify-email` — resend verification email
-- `/api/auth/verify-email` — verify user email
-- `/api/auth/login` — login user
-- `/api/auth/update-password` — request password reset (send code to email)
-- `/api/auth/verify-password` — verify code and update password
-- `/api/auth/logout` — logout user
-- `/api/auth/refresh` — refresh JWT tokens
-
----
-
-### Task Routes
-
-- `/api/tasks/get-all` — get all tasks for the current user
-- `/api/tasks/add-task` — create a new task
-- `/api/tasks/:id/status` — update task status (Active / Done)
-- `/api/tasks/:id` — delete a task
+- `POST /register` — register a new user  
+- `POST /re-verify-email` — resend verification email  
+- `POST /verify-email` — verify user email  
+- `POST /login` — login user  
+- `POST /update-password` — request password reset (send code to email)  
+- `POST /verify-password` — verify code and update password  
+- `POST /logout` — logout user  
+- `POST /refresh` — refresh JWT tokens  
 
 ---
 
-### Notification Routes
+### Task Routes (`/api/tasks`)
 
-- `/api/notification/get-notification` — get user notifications
-- `/api/notification/:id/read` — mark notification as read
-- `/api/notification/:id` — delete a notification
+- `GET /` — get all tasks for the current user  
+- `POST /` — create a new task  
+- `PATCH /:id/status` — update task status (Active / Done / In-progress / Archived / Blocked)  
+- `DELETE /:id` — delete a task  
+
+---
+
+### Notification Routes (`/api/notification`)
+
+- `GET /` — get user notifications  
+- `PATCH /:id/read` — mark notification as read  
+- `DELETE /:id` — delete a notification  
 
 ---
 

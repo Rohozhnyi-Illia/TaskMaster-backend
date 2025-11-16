@@ -42,13 +42,13 @@ app.use('/api/tasks', taskRoute)
 app.get('/ping', async (req, res) => {
   try {
     if (!mongoose.connection.readyState) {
-      return res.status(500).json({ message: 'DB not connected' })
+      return res.status(200).json({ message: 'Server awake, DB not connected' })
     }
 
     await mongoose.connection.db.admin().ping()
     res.status(200).json({ message: 'Server and MongoDB are awake' })
   } catch (error) {
-    res.status(500).json({ message: 'Ping failed', error: err.message })
+    res.status(200).json({ message: 'Server awake, DB may be waking', error: error.message })
   }
 })
 

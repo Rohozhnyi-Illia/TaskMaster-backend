@@ -20,7 +20,7 @@ class AuthService {
       const newUser = await UserModel.create({ email, password: hashPassword, name })
 
       const code = createVerifyCode()
-      await MailService.sendMail(email, 'Email verification', code)
+      await MailService.sendMail(email, 'Email verification', 'verify your email', code)
       newUser.emailActivationCode = code
       newUser.emailActivationCodeLifetime = new Date(Date.now() + 15 * 60 * 1000)
       await newUser.save()
@@ -65,7 +65,7 @@ class AuthService {
         id: existingUser._id,
         email: existingUser.email,
         name: existingUser.name,
-        message: 'User registered. Please verify your email using the code sent to your inbox',
+        message: 'Email successfully verified',
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       }
@@ -87,7 +87,7 @@ class AuthService {
       }
 
       const code = createVerifyCode()
-      await MailService.sendMail(email, 'Email verification', code)
+      await MailService.sendMail(email, 'Email verification', 'verify your email', code)
       existingUser.emailActivationCode = code
       existingUser.emailActivationCodeLifetime = new Date(Date.now() + 15 * 60 * 1000)
       await existingUser.save()
@@ -150,7 +150,7 @@ class AuthService {
       existingUser.passwordResetCode = code
       existingUser.passwordResetCodeLifetime = new Date(Date.now() + 15 * 60 * 1000)
 
-      await MailService.sendMail(email, 'Password verification', code)
+      await MailService.sendMail(email, 'Password verification', 'reset your password', code)
 
       await existingUser.save()
       return { message: 'The operation was successful' }
@@ -214,7 +214,7 @@ class AuthService {
     try {
       const updatedTokens = await TokenService.refreshToken(refreshToken)
       if (!updatedTokens) {
-        return Error('Token update error')
+        throw Error('Token update error')
       }
 
       return updatedTokens

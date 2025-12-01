@@ -4,43 +4,74 @@ const NotificationModel = require('../models/Notification')
 class NotificationService {
   static async checkDeadlines() {
     const now = new Date()
-    const weekAhead = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
-
     const tasks = await TaskModel.find({ timeTracker: true }).populate('user')
+
+    const warningDays = [7, 3, 1]
+    const reminderHours = [24, 48, 72, 96, 120]
 
     for (const task of tasks) {
       const diffMs = task.deadline - now
       const diffHours = diffMs / (1000 * 60 * 60)
       const diffDays = Math.ceil(diffHours / 24)
 
-      let message = null
-      let type = null
-
       if (diffMs < 0 && task.status !== 'Done') {
-        message = `The task "${task.task}" is overdue! Deadline has passed.`
-        type = 'overdue'
-      } else if (task.deadline <= weekAhead && diffMs > 0 && diffDays <= 7) {
-        message = `Don't forget the task "${task.task}" that needs to be done! Only ${diffDays} days left, get started now!`
-        type = 'warning'
-      } else if (diffHours <= task.remainingTime && diffHours > 0) {
-        message = `Reminder: Your task "${task.task}" is due in ${Math.ceil(diffHours)} hours!`
-        type = 'reminder'
-      }
-
-      if (message && type) {
         const alreadyExists = await NotificationModel.findOne({
           task: task._id,
-          type,
+          type: 'overdue',
         })
 
         if (!alreadyExists) {
           await NotificationModel.create({
             user: task.user._id,
             task: task._id,
-            message,
-            type,
+            message: `The task "${task.task}" is overdue! Deadline has passed.`,
+            type: 'overdue',
             isRead: false,
           })
+        }
+      }
+
+      for (const day of warningDays) {
+        if (diffDays === day && diffMs > 0) {
+          const alreadyExists = await NotificationModel.findOne({
+            task: task._id,
+            type: 'warning',
+            'meta.warningDay': day,
+          })
+
+          if (!alreadyExists) {
+            await NotificationModel.create({
+              user: task.user._id,
+              task: task._id,
+              message: `Don't forget the task "${task.task}"! Only ${day} day(s) left.`,
+              type: 'warning',
+              isRead: false,
+              meta: { warningDay: day },
+            })
+          }
+        }
+      }
+
+      for (const hours of reminderHours) {
+        if (diffHours <= hours && diffHours > hours - 1) {
+          const alreadyExists = await NotificationModel.findOne({
+            task: task._id,
+            type: 'reminder',
+            'meta.reminderHour': hours,
+          })
+
+          if (!alreadyExists) {
+            await NotificationModel.create({
+              user: task.user._id,
+              task: task._id,
+              message: `Reminder: Your task "${task.task}" is due in ${Math.ceil(
+                diffHours
+              )} hours!`,
+              type: 'reminder',
+              isRead: false,
+              meta: { reminderHour: hours },
+            })
+          }
         }
       }
     }

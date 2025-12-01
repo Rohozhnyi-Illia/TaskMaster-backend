@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const TokenModel = require('../models/Token')
+const bcrypt = require('bcrypt')
 
 class TokenService {
   generateToken(payload) {
@@ -7,21 +8,14 @@ class TokenService {
       const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
         expiresIn: '15m',
       })
+
       const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
         expiresIn: '7d',
       })
+
       return { accessToken, refreshToken }
     } catch (error) {
       console.error('Error in generateToken:', error)
-      return null
-    }
-  }
-
-  validateAccessToken(token) {
-    try {
-      return jwt.verify(token, process.env.JWT_ACCESS_SECRET)
-    } catch (error) {
-      console.error('Error in validateAccessToken:', error)
       return null
     }
   }
@@ -30,58 +24,72 @@ class TokenService {
     try {
       return jwt.verify(token, process.env.JWT_REFRESH_SECRET)
     } catch (error) {
-      console.error('Error in validateRefreshToken:', error)
       return null
     }
   }
 
   async saveToken(userId, refreshToken) {
     try {
+      const hashedToken = await bcrypt.hash(refreshToken, 10)
+
       const tokenData = await TokenModel.findOne({ user: userId })
 
       if (tokenData) {
-        tokenData.refreshToken = refreshToken
+        tokenData.refreshToken = hashedToken
         return tokenData.save()
       }
 
-      return await TokenModel.create({ user: userId, refreshToken })
+      return await TokenModel.create({
+        user: userId,
+        refreshToken: hashedToken,
+      })
     } catch (error) {
       console.error('Error in saveToken:', error)
-      return new Error(error)
+      return null
     }
   }
 
-  async removeToken(refreshToken) {
+  async removeToken(userId) {
     try {
-      return await TokenModel.deleteOne({ refreshToken })
+      return await TokenModel.deleteOne({ user: userId })
     } catch (error) {
       console.error('Error in removeToken:', error)
-      return new Error(error)
+      return null
     }
   }
 
-  async findToken(refreshToken) {
+  async findToken(userId) {
     try {
-      return await TokenModel.findOne({ refreshToken })
+      return await TokenModel.findOne({ user: userId })
     } catch (error) {
       console.error('Error in findToken:', error)
-      return new Error(error)
+      return null
     }
   }
 
   async refreshToken(oldRefreshToken) {
     try {
-      const userTokens = await TokenModel.findOne({ refreshToken: oldRefreshToken })
-      if (!userTokens) return null
+      if (!oldRefreshToken) return null
 
-      const tokens = this.generateToken({ id: userTokens.user })
-      userTokens.refreshToken = tokens.refreshToken
-      await userTokens.save()
+      const userData = this.validateRefreshToken(oldRefreshToken)
+      if (!userData) return null
+
+      const tokenFromDB = await TokenModel.findOne({ user: userData.id })
+      if (!tokenFromDB) return null
+
+      const isValid = await bcrypt.compare(oldRefreshToken, tokenFromDB.refreshToken)
+      if (!isValid) return null
+
+      const tokens = this.generateToken({ id: userData.id })
+
+      const hashedNew = await bcrypt.hash(tokens.refreshToken, 10)
+      tokenFromDB.refreshToken = hashedNew
+      await tokenFromDB.save()
 
       return tokens
     } catch (error) {
       console.error('Error in refreshToken:', error)
-      return new Error(error)
+      return null
     }
   }
 }

@@ -27,7 +27,6 @@ Built with **Node.js**, **Express**, and **MongoDB** — now with **email verifi
 - **crypto** — secure code generation for email verification
 - **dotenv** — environment configuration
 - **nodemailer + Brevo (Sendinblue)** — email delivery
-- **Supertest + Jest** — testing
 
 ---
 
@@ -49,39 +48,35 @@ npm start       # production mode
 
 Default server URL: http://localhost:9000.
 
-## Testing
-
-- `npm run test`
-
 ## API Endpoints
 
 ### Auth Routes (`/api/auth`)
 
-- `POST /register` — register a new user  
-- `POST /re-verify-email` — resend verification email  
-- `POST /verify-email` — verify user email  
-- `POST /login` — login user  
-- `POST /update-password` — request password reset (send code to email)  
-- `POST /verify-password` — verify code and update password  
-- `POST /logout` — logout user  
-- `POST /refresh` — refresh JWT tokens  
+- `POST /register` — register a new user
+- `POST /re-verify-email` — resend verification email
+- `POST /verify-email` — verify user email
+- `POST /login` — login user
+- `POST /update-password` — request password reset (send code to email)
+- `POST /verify-password` — verify code and update password
+- `POST /logout` — logout user
+- `POST /refresh` — refresh JWT tokens
 
 ---
 
 ### Task Routes (`/api/tasks`)
 
-- `GET /` — get all tasks for the current user  
-- `POST /` — create a new task  
-- `PATCH /:id/status` — update task status (Active / Done / In-progress / Archived / Blocked)  
-- `DELETE /:id` — delete a task  
+- `GET /` — get all tasks for the current user
+- `POST /` — create a new task
+- `PATCH /:id/status` — update task status (Active / Done / In-progress / Archived / Blocked)
+- `DELETE /:id` — delete a task
 
 ---
 
 ### Notification Routes (`/api/notification`)
 
-- `GET /` — get user notifications  
-- `PATCH /:id/read` — mark notification as read  
-- `DELETE /:id` — delete a notification  
+- `GET /` — get user notifications
+- `PATCH /:id/read` — mark notification as read
+- `DELETE /:id` — delete a notification
 
 ---
 

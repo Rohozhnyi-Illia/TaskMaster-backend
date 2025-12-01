@@ -10,10 +10,7 @@ const taskRoute = require('./routers/taskRoute')
 
 const app = express()
 const PORT = process.env.PORT
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://verdant-sfogliatella-0ba40c.netlify.app',
-]
+const allowedOrigins = ['http://localhost:3000', 'https://taskmaster.ink']
 
 app.use(
   cors({

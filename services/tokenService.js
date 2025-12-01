@@ -32,12 +32,7 @@ class TokenService {
     try {
       const hashedToken = await bcrypt.hash(refreshToken, 10)
 
-      const tokenData = await TokenModel.findOne({ user: userId })
-
-      if (tokenData) {
-        tokenData.refreshToken = hashedToken
-        return tokenData.save()
-      }
+      await TokenModel.deleteMany({ user: userId })
 
       return await TokenModel.create({
         user: userId,

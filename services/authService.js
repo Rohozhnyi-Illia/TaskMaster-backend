@@ -197,17 +197,14 @@ class AuthService {
       throw error
     }
   }
-
   async logout(refreshToken) {
-    try {
-      if (!refreshToken) return Error('No token provided')
-      await TokenService.removeToken(refreshToken)
+    if (!refreshToken) throw new Error('No token provided')
 
-      return { message: 'Successfully logged out' }
-    } catch (error) {
-      console.error('Error in logout service:', error)
-      throw new Error(error)
-    }
+    const userData = TokenService.validateRefreshToken(refreshToken)
+    if (!userData) throw new Error('Invalid token')
+
+    await TokenService.removeToken(userData.id)
+    return { message: 'Successfully logged out' }
   }
 
   async refreshToken(refreshToken) {

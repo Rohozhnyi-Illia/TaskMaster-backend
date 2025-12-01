@@ -32,12 +32,11 @@ class TokenService {
     try {
       const hashedToken = await bcrypt.hash(refreshToken, 10)
 
-      await TokenModel.deleteMany({ user: userId })
-
-      return await TokenModel.create({
-        user: userId,
-        refreshToken: hashedToken,
-      })
+      await TokenModel.findOneAndUpdate(
+        { user: userId },
+        { refreshToken: hashedToken },
+        { upsert: true, new: true }
+      )
     } catch (error) {
       console.error('Error in saveToken:', error)
       return null
@@ -46,7 +45,7 @@ class TokenService {
 
   async removeToken(userId) {
     try {
-      return await TokenModel.deleteOne({ user: userId })
+      await TokenModel.deleteOne({ user: userId })
     } catch (error) {
       console.error('Error in removeToken:', error)
       return null

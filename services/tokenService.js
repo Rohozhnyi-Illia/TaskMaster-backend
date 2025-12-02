@@ -26,61 +26,53 @@ class TokenService {
       return null
     }
   }
-
   async saveToken(userId, refreshToken) {
     try {
-      await TokenModel.findOneAndUpdate(
-        { user: userId },
-        { refreshToken },
-        { upsert: true, new: true }
-      )
+      const tokenData = await TokenModel.findOne({ user: userId })
+
+      if (tokenData) {
+        tokenData.refreshToken = refreshToken
+        return tokenData.save()
+      }
+
+      return await TokenModel.create({ user: userId, refreshToken })
     } catch (error) {
       console.error('Error in saveToken:', error)
-      return null
+      return new Error(error)
     }
   }
 
-  async removeToken(userId) {
+  async removeToken(refreshToken) {
     try {
-      await TokenModel.deleteOne({ user: userId })
+      return await TokenModel.deleteOne({ refreshToken })
     } catch (error) {
       console.error('Error in removeToken:', error)
-      return null
+      return new Error(error)
     }
   }
 
-  async findToken(userId) {
+  async findToken(refreshToken) {
     try {
-      return await TokenModel.findOne({ user: userId })
+      return await TokenModel.findOne({ refreshToken })
     } catch (error) {
       console.error('Error in findToken:', error)
-      return null
+      return new Error(error)
     }
   }
 
   async refreshToken(oldRefreshToken) {
     try {
-      if (!oldRefreshToken) return null
+      const userTokens = await TokenModel.findOne({ refreshToken: oldRefreshToken })
+      if (!userTokens) return null
 
-      const userData = this.validateRefreshToken(oldRefreshToken)
-      if (!userData) return null
-
-      const tokenFromDB = await TokenModel.findOne({ user: userData.id })
-      if (!tokenFromDB) return null
-
-      if (tokenFromDB.refreshToken !== oldRefreshToken) {
-        return null
-      }
-
-      const tokens = this.generateToken({ id: userData.id })
-
-      tokenFromDB.refreshToken = tokens.refreshToken
-      await tokenFromDB.save()
+      const tokens = this.generateToken({ id: userTokens.user })
+      userTokens.refreshToken = tokens.refreshToken
+      await userTokens.save()
 
       return tokens
     } catch (error) {
       console.error('Error in refreshToken:', error)
-      return null
+      return new Error(error)
     }
   }
 }

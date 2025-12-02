@@ -24,6 +24,11 @@ const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid token' })
     }
 
+    const storedToken = await TokenModel.findOne({ user: payload.id })
+    if (!storedToken) {
+      return res.status(401).json({ message: 'Session expired' })
+    }
+
     const user = await UserModel.findById(payload.id)
     if (!user) {
       return res.status(401).json({ message: 'User not found' })

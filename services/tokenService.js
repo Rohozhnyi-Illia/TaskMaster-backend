@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken')
 const TokenModel = require('../models/Token')
-const bcrypt = require('bcrypt')
 
 class TokenService {
   generateToken(payload) {
@@ -30,11 +29,9 @@ class TokenService {
 
   async saveToken(userId, refreshToken) {
     try {
-      const hashedToken = await bcrypt.hash(refreshToken, 10)
-
       await TokenModel.findOneAndUpdate(
         { user: userId },
-        { refreshToken: hashedToken },
+        { refreshToken },
         { upsert: true, new: true }
       )
     } catch (error) {
@@ -71,13 +68,13 @@ class TokenService {
       const tokenFromDB = await TokenModel.findOne({ user: userData.id })
       if (!tokenFromDB) return null
 
-      const isValid = await bcrypt.compare(oldRefreshToken, tokenFromDB.refreshToken)
-      if (!isValid) return null
+      if (tokenFromDB.refreshToken !== oldRefreshToken) {
+        return null
+      }
 
       const tokens = this.generateToken({ id: userData.id })
 
-      const hashedNew = await bcrypt.hash(tokens.refreshToken, 10)
-      tokenFromDB.refreshToken = hashedNew
+      tokenFromDB.refreshToken = tokens.refreshToken
       await tokenFromDB.save()
 
       return tokens

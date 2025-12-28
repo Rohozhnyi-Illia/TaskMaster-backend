@@ -15,7 +15,7 @@ const TaskModel = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['Active', 'Done'],
+      enum: ['Active', 'Done', 'InProgress', 'Archived'],
       required: true,
     },
     category: {

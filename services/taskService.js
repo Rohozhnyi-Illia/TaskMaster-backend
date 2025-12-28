@@ -1,5 +1,4 @@
 const TaskModel = require('../models/Task')
-const UserModel = require('../models/User')
 
 class TaskService {
   async getAllTasks(userId) {
@@ -22,7 +21,7 @@ class TaskService {
         status,
         category,
         deadline,
-        remainingTime: remainingTime || 24,
+        remainingTime: remainingTime !== undefined ? remainingTime : 24,
       })
 
       return newTask

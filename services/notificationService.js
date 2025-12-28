@@ -4,10 +4,14 @@ const NotificationModel = require('../models/Notification')
 class NotificationService {
   static async checkDeadlines() {
     const now = new Date()
-    const tasks = await TaskModel.find({ timeTracker: true }).populate('user')
+
+    const tasks = await TaskModel.find({
+      timeTracker: true,
+      status: { $in: ['Active', 'InProgress'] },
+      user: { $ne: null },
+    }).populate('user')
 
     const warningDays = [7, 3, 1]
-    const reminderHours = [24, 48, 72, 96, 120]
 
     for (const task of tasks) {
       const diffMs = task.deadline - now
@@ -15,12 +19,11 @@ class NotificationService {
       const diffDays = Math.ceil(diffHours / 24)
 
       if (diffMs < 0 && task.status !== 'Done') {
-        const alreadyExists = await NotificationModel.findOne({
+        const exists = await NotificationModel.findOne({
           task: task._id,
           type: 'overdue',
         })
-
-        if (!alreadyExists) {
+        if (!exists) {
           await NotificationModel.create({
             user: task.user._id,
             task: task._id,
@@ -33,13 +36,12 @@ class NotificationService {
 
       for (const day of warningDays) {
         if (diffDays === day && diffMs > 0) {
-          const alreadyExists = await NotificationModel.findOne({
+          const exists = await NotificationModel.findOne({
             task: task._id,
             type: 'warning',
             'meta.warningDay': day,
           })
-
-          if (!alreadyExists) {
+          if (!exists) {
             await NotificationModel.create({
               user: task.user._id,
               task: task._id,
@@ -52,26 +54,23 @@ class NotificationService {
         }
       }
 
-      for (const hours of reminderHours) {
-        if (diffHours <= hours && diffHours > hours - 1) {
-          const alreadyExists = await NotificationModel.findOne({
-            task: task._id,
-            type: 'reminder',
-            'meta.reminderHour': hours,
-          })
+      if (task.remainingTime > 0) {
+        const exists = await NotificationModel.findOne({
+          task: task._id,
+          type: 'reminder',
+        })
 
-          if (!alreadyExists) {
-            await NotificationModel.create({
-              user: task.user._id,
-              task: task._id,
-              message: `Reminder: Your task "${task.task}" is due in ${Math.ceil(
-                diffHours
-              )} hours!`,
-              type: 'reminder',
-              isRead: false,
-              meta: { reminderHour: hours },
-            })
-          }
+        if (!exists && diffHours <= task.remainingTime) {
+          await NotificationModel.create({
+            user: task.user._id,
+            task: task._id,
+            message: `Reminder: Your task "${task.task}" is due in ${Math.ceil(
+              diffHours
+            )} hours!`,
+            type: 'reminder',
+            isRead: false,
+            meta: { reminderHour: task.remainingTime },
+          })
         }
       }
     }

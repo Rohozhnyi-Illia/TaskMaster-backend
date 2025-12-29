@@ -10,7 +10,6 @@ class TaskController {
 
       res.status(200).json(tasks)
     } catch (error) {
-      console.error('Error in getAllTasks controller:', error)
       res.status(500).json({
         message: 'Internal server error',
         error: error.message,
@@ -34,7 +33,6 @@ class TaskController {
 
       res.status(201).json(result)
     } catch (error) {
-      console.error('Error in createTask controller:', error)
       res.status(500).json({ message: 'Internal server error' })
     }
   }
@@ -45,7 +43,6 @@ class TaskController {
       const deletedTask = await TaskService.deleteTask(id)
       res.status(200).json({ message: 'Task deleted successfully', task: deletedTask })
     } catch (error) {
-      console.error('Error in deleteTask controller:', error)
       res.status(500).json({ message: 'Internal server error', error: error.message })
     }
   }
@@ -63,7 +60,6 @@ class TaskController {
         task: updatedTask,
       })
     } catch (error) {
-      console.error('Error in updateStatus controller:', error)
       res.status(500).json({ message: 'Internal server error', error: error.message })
     }
   }

@@ -5,7 +5,7 @@ class TokenService {
   generateToken(payload) {
     try {
       const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
-        expiresIn: '1m',
+        expiresIn: '15m',
       })
 
       const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
@@ -14,7 +14,6 @@ class TokenService {
 
       return { accessToken, refreshToken }
     } catch (error) {
-      console.error('Error in generateToken:', error)
       return null
     }
   }
@@ -37,7 +36,6 @@ class TokenService {
 
       return await TokenModel.create({ user: userId, refreshToken })
     } catch (error) {
-      console.error('Error in saveToken:', error)
       return new Error(error)
     }
   }
@@ -46,7 +44,6 @@ class TokenService {
     try {
       return await TokenModel.deleteOne({ refreshToken })
     } catch (error) {
-      console.error('Error in removeToken:', error)
       return new Error(error)
     }
   }
@@ -55,7 +52,6 @@ class TokenService {
     try {
       return await TokenModel.findOne({ refreshToken })
     } catch (error) {
-      console.error('Error in findToken:', error)
       return new Error(error)
     }
   }
@@ -71,7 +67,6 @@ class TokenService {
 
       return tokens
     } catch (error) {
-      console.error('Error in refreshToken:', error)
       return new Error(error)
     }
   }

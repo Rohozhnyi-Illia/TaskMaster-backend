@@ -10,7 +10,6 @@ class NotificationController {
       })
       res.status(200).json(notifications)
     } catch (error) {
-      console.error('Error getting notifications:', error)
       res.status(500).json({ message: 'Internal server error' })
     }
   }
@@ -21,7 +20,6 @@ class NotificationController {
       const updated = await NotificationService.markAsRead(id)
       res.status(200).json(updated)
     } catch (error) {
-      console.error('Error marking notification as read:', error)
       res.status(500).json({ message: 'Internal server error' })
     }
   }
@@ -37,7 +35,6 @@ class NotificationController {
 
       res.status(200).json({ success: true, data: deletedNotification })
     } catch (error) {
-      console.error('Error deleting notification:', error)
       res.status(500).json({ message: 'Internal server error' })
     }
   }

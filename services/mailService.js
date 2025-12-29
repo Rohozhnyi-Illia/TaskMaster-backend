@@ -21,7 +21,6 @@ class MailService {
         }
       )
     } catch (err) {
-      console.error('Mail send error:', err.response?.data || err.message)
       throw err
     }
   }

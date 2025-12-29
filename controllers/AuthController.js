@@ -13,7 +13,6 @@ class AuthController {
         message: result.message,
       })
     } catch (error) {
-      console.log('Error in register controller:', error)
       res.status(500).json({ message: 'Internal server error', error: error.message })
     }
   }
@@ -33,7 +32,6 @@ class AuthController {
 
       res.status(200).json(result)
     } catch (error) {
-      console.error('Error in verifyEmail controller:', error)
       res.status(500).json({ message: 'Internal server error', error: error.message })
     }
   }
@@ -45,7 +43,6 @@ class AuthController {
 
       res.status(200).json(result)
     } catch (error) {
-      console.error('Error in reVerifyEmail controller:', error)
       res.status(500).json({ message: 'Internal server error', error: error.message })
     }
   }
@@ -71,7 +68,6 @@ class AuthController {
         emailActivated: result.emailActivated,
       })
     } catch (error) {
-      console.log('Error in login controller:', error)
       res.status(500).json({ message: 'Internal server error', error: error.message })
     }
   }
@@ -83,7 +79,6 @@ class AuthController {
 
       return res.json(result)
     } catch (error) {
-      console.log('Error in updatePassword controller:', error)
       res.status(500).json({ message: 'Internal server error', error: error.message })
     }
   }
@@ -100,7 +95,6 @@ class AuthController {
 
       return res.json(result)
     } catch (error) {
-      console.log('Error in verifyPassword controller:', error)
       res.status(500).json({ message: 'Internal server error', error: error.message })
     }
   }
@@ -120,7 +114,6 @@ class AuthController {
 
       return res.json(result)
     } catch (error) {
-      console.log('Error in logout controller:', error)
       res.status(500).json({ message: 'Internal server error', error: error.message })
     }
   }
@@ -140,7 +133,6 @@ class AuthController {
 
       return res.json(result)
     } catch (error) {
-      console.log('Error in logout controller:', error)
       res.status(500).json({ message: 'Internal server error', error: error.message })
     }
   }

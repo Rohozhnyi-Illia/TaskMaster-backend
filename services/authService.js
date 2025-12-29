@@ -32,7 +32,6 @@ class AuthService {
         message: 'User registered. Please verify your email using the code sent to your inbox',
       }
     } catch (error) {
-      console.error('Error in register service:', error)
       throw error
     }
   }
@@ -70,7 +69,6 @@ class AuthService {
         refreshToken: tokens.refreshToken,
       }
     } catch (error) {
-      console.error('Error in verify email service:', error)
       throw error
     }
   }
@@ -96,7 +94,6 @@ class AuthService {
         emailActivated: existingUser.emailActivated,
       }
     } catch (error) {
-      console.error('Error in re-verify email service:', error)
       throw error
     }
   }
@@ -133,7 +130,6 @@ class AuthService {
         emailActivated: existingUser.emailActivated,
       }
     } catch (error) {
-      console.error('Error in login service:', error)
       throw error
     }
   }
@@ -155,7 +151,6 @@ class AuthService {
       await existingUser.save()
       return { message: 'The operation was successful' }
     } catch (error) {
-      console.error('Error in updatePassword service:', error)
       throw error
     }
   }
@@ -193,7 +188,6 @@ class AuthService {
 
       return { message: 'Password successfully changed' }
     } catch (error) {
-      console.error('Error in updatePassword service:', error)
       throw error
     }
   }
@@ -205,7 +199,6 @@ class AuthService {
 
       return { message: 'Successfully logged out' }
     } catch (error) {
-      console.error('Error in logout service:', error)
       throw new Error(error)
     }
   }
@@ -219,7 +212,6 @@ class AuthService {
 
       return updatedTokens
     } catch (error) {
-      console.error('Error in refreshToken service:', error)
       throw error
     }
   }

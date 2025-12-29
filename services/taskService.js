@@ -6,7 +6,6 @@ class TaskService {
       const tasks = await TaskModel.find({ user: userId }).sort({ createdAt: -1 })
       return tasks
     } catch (error) {
-      console.error('Error in getAllTasks service:', error)
       throw new Error('Failed to fetch tasks')
     }
   }
@@ -26,7 +25,6 @@ class TaskService {
 
       return newTask
     } catch (error) {
-      console.error('Error in createTask service:', error)
       throw new Error('Task addition error')
     }
   }
@@ -39,14 +37,13 @@ class TaskService {
       }
       return deletedTask
     } catch (error) {
-      console.error('Error in deleteTask service:', error)
       throw new Error('Task deleted error')
     }
   }
 
   async updateStatus(taskId, userId, newStatus) {
     try {
-      const allowedStatuses = ['Active', 'Done', 'In-progress', 'Archived', 'Blocked']
+      const allowedStatuses = ['Active', 'Done', 'InProgress', 'Archived']
       if (!allowedStatuses.includes(newStatus)) {
         throw new Error('Invalid status')
       }
@@ -61,7 +58,6 @@ class TaskService {
 
       return task
     } catch (error) {
-      console.error('Error in updateStatus service:', error)
       throw new Error('Task status update error')
     }
   }

@@ -38,6 +38,36 @@ class NotificationController {
       res.status(500).json({ message: 'Internal server error' })
     }
   }
+
+  async deleteReadNotifications(req, res) {
+    try {
+      const userId = req.user.id
+
+      const result = await NotificationService.deleteReadNotifications(userId)
+
+      res.status(200).json({
+        success: true,
+        deletedCount: result.deletedCount,
+      })
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' })
+    }
+  }
+
+  async deleteAllNotifications(req, res) {
+    try {
+      const userId = req.user.id
+
+      const result = await NotificationService.deleteAllNotifications(userId)
+
+      res.status(200).json({
+        success: true,
+        deletedCount: result.deletedCount,
+      })
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' })
+    }
+  }
 }
 
 module.exports = new NotificationController()

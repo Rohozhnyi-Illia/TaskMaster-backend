@@ -65,7 +65,7 @@ class NotificationService {
             user: task.user._id,
             task: task._id,
             message: `Reminder: Your task "${task.task}" is due in ${Math.ceil(
-              diffHours
+              diffHours,
             )} hours!`,
             type: 'reminder',
             isRead: false,
@@ -77,11 +77,44 @@ class NotificationService {
   }
 
   static async markAsRead(notificationId) {
-    return NotificationModel.findByIdAndUpdate(notificationId, { isRead: true }, { new: true })
+    try {
+      return NotificationModel.findByIdAndUpdate(
+        notificationId,
+        { isRead: true },
+        { new: true },
+      )
+    } catch (error) {
+      throw new Error('Read notification error')
+    }
   }
 
   static async deleteNotification(notificationId) {
-    return NotificationModel.findByIdAndDelete(notificationId)
+    try {
+      return NotificationModel.findByIdAndDelete(notificationId)
+    } catch (error) {
+      throw new Error('Delete notification error')
+    }
+  }
+
+  static async deleteReadNotifications(userId) {
+    try {
+      return NotificationModel.deleteMany({
+        user: userId,
+        isRead: true,
+      })
+    } catch (error) {
+      throw new Error('Delete read notification error')
+    }
+  }
+
+  static async deleteAllNotifications(userId) {
+    try {
+      return NotificationModel.deleteMany({
+        user: userId,
+      })
+    } catch (error) {
+      throw new Error('Delete all notifications error')
+    }
   }
 }
 

@@ -11,6 +11,14 @@ router.patch('/:id/read', authMiddleware, (req, res) => {
   NotificationController.markAsRead(req, res)
 })
 
+router.delete('/readAll', authMiddleware, (req, res) => {
+  NotificationController.deleteReadNotifications(req, res)
+})
+
+router.delete('/deleteAll', authMiddleware, (req, res) => {
+  NotificationController.deleteAllNotifications(req, res)
+})
+
 router.delete('/:id', authMiddleware, (req, res) => {
   NotificationController.delete(req, res)
 })

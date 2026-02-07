@@ -1,4 +1,5 @@
 const TaskModel = require('../models/Task')
+const NotificationModel = require('../models/Notification')
 
 class TaskService {
   async getAllTasks(userId) {
@@ -35,6 +36,7 @@ class TaskService {
       if (!deletedTask) {
         throw new Error('Task not found')
       }
+
       return deletedTask
     } catch (error) {
       throw new Error('Task deleted error')

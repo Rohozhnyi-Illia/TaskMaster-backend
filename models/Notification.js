@@ -25,12 +25,20 @@ const NotificationSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isDismissed: {
+      type: Boolean,
+      default: false,
+    },
+    dismissedAt: {
+      type: Date,
+      default: null,
+    },
     meta: {
       type: Object,
       default: {},
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 )
 
 module.exports = mongoose.model('Notification', NotificationSchema)

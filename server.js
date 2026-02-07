@@ -26,7 +26,7 @@ app.use(
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  })
+  }),
 )
 
 app.use(express.json())
@@ -54,13 +54,10 @@ const startServer = async () => {
     await mongoose.connect(process.env.DB_URL, {
       dbName: 'TaskMaster',
     })
-    console.log('✅ MongoDB connected successfully')
-    app.listen(PORT, () => {
-      console.log(`Server was started on port: ${PORT}`)
-    })
+
+    app.listen(PORT)
     initDeadlineChecker()
   } catch (error) {
-    console.error(error)
     process.exit(0)
   }
 }

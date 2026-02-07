@@ -3,117 +3,166 @@ const NotificationModel = require('../models/Notification')
 
 class NotificationService {
   static async checkDeadlines() {
-    const now = new Date()
+    const currentDate = new Date()
+    const warningDaysArray = [7, 3, 1]
 
-    const tasks = await TaskModel.find({
+    const tasksWithTimeTracker = await TaskModel.find({
       timeTracker: true,
       status: { $in: ['Active', 'InProgress'] },
       user: { $ne: null },
     }).populate('user')
 
-    const warningDays = [7, 3, 1]
+    for (const task of tasksWithTimeTracker) {
+      const differenceMilliseconds = task.deadline - currentDate
+      const differenceHours = differenceMilliseconds / (1000 * 60 * 60)
+      const differenceDays = Math.ceil(differenceHours / 24)
 
-    for (const task of tasks) {
-      const diffMs = task.deadline - now
-      const diffHours = diffMs / (1000 * 60 * 60)
-      const diffDays = Math.ceil(diffHours / 24)
+      const existingOverdueNotification = await NotificationModel.findOne({
+        task: task._id,
+        type: 'overdue',
+      })
 
-      if (diffMs < 0 && task.status !== 'Done') {
-        const exists = await NotificationModel.findOne({
+      if (
+        differenceMilliseconds < 0 &&
+        task.status !== 'Done' &&
+        !existingOverdueNotification
+      ) {
+        await NotificationModel.create({
+          user: task.user._id,
           task: task._id,
+          message: `The task "${task.task}" is overdue! Deadline has passed.`,
           type: 'overdue',
+          isRead: false,
+          isDismissed: false,
         })
-        if (!exists) {
-          await NotificationModel.create({
-            user: task.user._id,
-            task: task._id,
-            message: `The task "${task.task}" is overdue! Deadline has passed.`,
-            type: 'overdue',
-            isRead: false,
-          })
-        }
       }
 
-      for (const day of warningDays) {
-        if (diffDays === day && diffMs > 0) {
-          const exists = await NotificationModel.findOne({
-            task: task._id,
-            type: 'warning',
-            'meta.warningDay': day,
-          })
-          if (!exists) {
-            await NotificationModel.create({
-              user: task.user._id,
-              task: task._id,
-              message: `Don't forget the task "${task.task}"! Only ${day} day(s) left.`,
-              type: 'warning',
-              isRead: false,
-              meta: { warningDay: day },
-            })
-          }
-        }
-      }
-
-      if (task.remainingTime > 0) {
-        const exists = await NotificationModel.findOne({
+      for (const warningDay of warningDaysArray) {
+        const existingWarningNotification = await NotificationModel.findOne({
           task: task._id,
-          type: 'reminder',
+          type: 'warning',
+          'meta.warningDay': warningDay,
         })
 
-        if (!exists && diffHours <= task.remainingTime) {
+        if (
+          differenceDays === warningDay &&
+          differenceMilliseconds > 0 &&
+          !existingWarningNotification
+        ) {
           await NotificationModel.create({
             user: task.user._id,
             task: task._id,
-            message: `Reminder: Your task "${task.task}" is due in ${Math.ceil(
-              diffHours,
-            )} hours!`,
-            type: 'reminder',
+            message: `Don't forget the task "${task.task}"! Only ${warningDay} day(s) left.`,
+            type: 'warning',
+            meta: { warningDay: warningDay },
             isRead: false,
-            meta: { reminderHour: task.remainingTime },
+            isDismissed: false,
           })
         }
+      }
+
+      const existingReminderNotification = await NotificationModel.findOne({
+        task: task._id,
+        type: 'reminder',
+        'meta.reminderHour': task.remainingTime,
+      })
+
+      if (
+        task.remainingTime > 0 &&
+        differenceHours > 0 &&
+        differenceHours <= task.remainingTime &&
+        !existingReminderNotification
+      ) {
+        await NotificationModel.create({
+          user: task.user._id,
+          task: task._id,
+          message: `Reminder: Your task "${task.task}" is due in ${Math.ceil(differenceHours)} hours!`,
+          type: 'reminder',
+          meta: { reminderHour: task.remainingTime },
+          isRead: false,
+          isDismissed: false,
+        })
       }
     }
   }
 
+  static async getNotifications(userId) {
+    const notificationsForUser = await NotificationModel.find({
+      user: userId,
+      isDismissed: false,
+    }).sort({ createdAt: -1 })
+
+    return notificationsForUser
+  }
+
   static async markAsRead(notificationId) {
     try {
-      return NotificationModel.findByIdAndUpdate(
-        notificationId,
+      const updatedNotification = await NotificationModel.findOneAndUpdate(
+        { _id: notificationId, isDismissed: false },
         { isRead: true },
         { new: true },
       )
+      return updatedNotification
     } catch (error) {
-      throw new Error('Read notification error')
+      throw new Error('Error marking notification as read')
     }
   }
 
   static async deleteNotification(notificationId) {
     try {
-      return NotificationModel.findByIdAndDelete(notificationId)
+      const updatedNotification = await NotificationModel.findByIdAndUpdate(
+        notificationId,
+        { isDismissed: true, dismissedAt: new Date() },
+        { new: true },
+      )
+      return updatedNotification
     } catch (error) {
-      throw new Error('Delete notification error')
+      throw new Error('Error dismissing notification')
     }
   }
 
   static async deleteReadNotifications(userId) {
     try {
-      return NotificationModel.deleteMany({
+      const readNotifications = await NotificationModel.find({
         user: userId,
         isRead: true,
+        isDismissed: false,
       })
+
+      if (!readNotifications.length) return { success: true, deletedCount: 0 }
+
+      const readNotificationIds = readNotifications.map((notification) => notification._id)
+
+      await NotificationModel.updateMany(
+        { _id: { $in: readNotificationIds } },
+        { isDismissed: true, dismissedAt: new Date() },
+      )
+
+      return { success: true, deletedCount: readNotifications.length }
     } catch (error) {
-      throw new Error('Delete read notification error')
+      throw new Error('Error dismissing read notifications')
     }
   }
 
   static async deleteAllNotifications(userId) {
     try {
-      return NotificationModel.deleteMany({
+      const allNotifications = await NotificationModel.find({
         user: userId,
+        isDismissed: false,
       })
+
+      if (!allNotifications.length) return { success: true, deletedCount: 0 }
+
+      const allNotificationIds = allNotifications.map((notification) => notification._id)
+
+      await NotificationModel.updateMany(
+        { _id: { $in: allNotificationIds } },
+        { isDismissed: true, dismissedAt: new Date() },
+      )
+
+      return { success: true, deletedCount: allNotifications.length }
     } catch (error) {
-      throw new Error('Delete all notifications error')
+      throw new Error('Error dismissing all notifications')
     }
   }
 }

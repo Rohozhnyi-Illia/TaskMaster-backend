@@ -2,7 +2,7 @@ const cron = require('node-cron')
 const NotificationService = require('../services/notificationService')
 
 function initDeadlineChecker() {
-  cron.schedule('*/1 * * * *', async () => {
+  cron.schedule('*/15 * * * *', async () => {
     try {
       await NotificationService.checkDeadlines()
     } catch (err) {

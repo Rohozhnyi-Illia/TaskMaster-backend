@@ -87,12 +87,29 @@ class NotificationService {
   }
 
   static async getNotifications(userId) {
-    const notificationsForUser = await NotificationModel.find({
-      user: userId,
-      isDismissed: false,
-    }).sort({ createdAt: -1 })
+    try {
+      const notificationsForUser = await NotificationModel.find({
+        user: userId,
+        isDismissed: false,
+      }).sort({ createdAt: -1 })
 
-    return notificationsForUser
+      return notificationsForUser
+    } catch (error) {
+      throw new Error('Error receiving notification')
+    }
+  }
+
+  static async getNotificationsCount(userId) {
+    try {
+      const count = await NotificationModel.countDocuments({
+        user: userId,
+        isDismissed: false,
+      })
+
+      return count
+    } catch (error) {
+      throw new Error('Error receiving number of notifications')
+    }
   }
 
   static async markAsRead(notificationId) {

@@ -12,6 +12,16 @@ class NotificationController {
     }
   }
 
+  async getNotificationsCount(req, res) {
+    try {
+      const userId = req.user.id
+      const count = await NotificationService.getNotificationsCount(userId)
+      res.status(200).json({ count })
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' })
+    }
+  }
+
   async markAsRead(req, res) {
     try {
       const { id } = req.params

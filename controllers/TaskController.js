@@ -63,6 +63,21 @@ class TaskController {
       res.status(500).json({ message: 'Internal server error', error: error.message })
     }
   }
+
+  async reorderTasks(req, res) {
+    try {
+      const userId = req.user._id
+      const { orderedIds } = req.body
+
+      await TaskService.reorderTasks(userId, orderedIds)
+
+      res.status(200).json({
+        message: 'Tasks reordered successfully',
+      })
+    } catch (error) {
+      res.status(500).json({ message: error.message })
+    }
+  }
 }
 
 module.exports = new TaskController()

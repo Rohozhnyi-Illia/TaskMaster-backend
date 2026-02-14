@@ -20,4 +20,8 @@ router.patch('/:id/status', authMiddleware, (req, res) => {
   TaskController.updateStatus(req, res)
 })
 
+router.patch('/reorder', authMiddleware, (req, res) => {
+  TaskController.reorderTasks(req, res)
+})
+
 module.exports = router

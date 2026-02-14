@@ -4,7 +4,7 @@ const NotificationModel = require('../models/Notification')
 class TaskService {
   async getAllTasks(userId) {
     try {
-      const tasks = await TaskModel.find({ user: userId }).sort({ createdAt: -1 })
+      const tasks = await TaskModel.find({ user: userId }).sort({ order: 1 })
       return tasks
     } catch (error) {
       throw new Error('Failed to fetch tasks')
@@ -15,6 +15,9 @@ class TaskService {
     try {
       const { userId, task, status, category, deadline, remainingTime } = props
 
+      const lastTask = await TaskModel.findOne({ user: userId }).sort({ order: -1 })
+      const newOrder = lastTask ? lastTask.order + 1 : 0
+
       const newTask = await TaskModel.create({
         user: userId,
         task,
@@ -22,6 +25,7 @@ class TaskService {
         category,
         deadline,
         remainingTime: remainingTime !== undefined ? remainingTime : 24,
+        order: newOrder,
       })
 
       return newTask
@@ -61,6 +65,27 @@ class TaskService {
       return task
     } catch (error) {
       throw new Error('Task status update error')
+    }
+  }
+
+  async reorderTasks(userId, orderedIds) {
+    try {
+      if (!Array.isArray(orderedIds)) {
+        throw new Error('Invalid data format')
+      }
+
+      const bulkOps = orderedIds.map((id, index) => ({
+        updateOne: {
+          filter: { _id: id, user: userId },
+          update: { order: index },
+        },
+      }))
+
+      await TaskModel.bulkWrite(bulkOps)
+
+      return true
+    } catch (error) {
+      throw new Error('Reorder failed')
     }
   }
 }

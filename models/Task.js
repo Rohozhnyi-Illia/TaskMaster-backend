@@ -27,8 +27,13 @@ const TaskModel = new mongoose.Schema(
     deadline: { type: Date, required: true, immutable: true },
     remainingTime: { type: Number, default: 24, immutable: true },
     timeTracker: { type: Boolean, default: true, immutable: true },
+    order: {
+      type: Number,
+      required: true,
+    },
   },
-  { timestamps: true }
+
+  { timestamps: true },
 )
 
 module.exports = mongoose.model('Task', TaskModel)

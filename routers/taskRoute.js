@@ -20,6 +20,10 @@ router.patch('/:id/status', authMiddleware, (req, res) => {
   TaskController.updateStatus(req, res)
 })
 
+router.patch('/:id/category', authMiddleware, (req, res) => {
+  TaskController.updateCategory(req, res)
+})
+
 router.patch('/reorder', authMiddleware, (req, res) => {
   TaskController.reorderTasks(req, res)
 })

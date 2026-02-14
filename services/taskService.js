@@ -68,6 +68,28 @@ class TaskService {
     }
   }
 
+  async updateCategory(taskId, userId, newCategory) {
+    try {
+      const allowedCategories = ['Critical', 'High', 'Middle', 'Low']
+      if (!allowedCategories.includes(newCategory)) {
+        throw new Error('Invalid category')
+      }
+
+      const task = await TaskModel.findOne({ _id: taskId, user: userId })
+      if (!task) {
+        throw new Error('Task not found or does not belong to the user')
+      }
+
+      task.category = newCategory
+      await task.save()
+
+      return task
+    } catch (error) {
+      console.error(error)
+      throw new Error('Category status update error')
+    }
+  }
+
   async reorderTasks(userId, orderedIds) {
     try {
       if (!Array.isArray(orderedIds)) {

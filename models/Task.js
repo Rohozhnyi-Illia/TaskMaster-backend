@@ -20,9 +20,8 @@ const TaskModel = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ['High', 'Middle', 'Low'],
+      enum: ['Critical', 'High', 'Middle', 'Low'],
       required: true,
-      immutable: true,
     },
     deadline: { type: Date, required: true, immutable: true },
     remainingTime: { type: Number, default: 24, immutable: true },

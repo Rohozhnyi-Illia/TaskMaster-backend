@@ -64,6 +64,23 @@ class TaskController {
     }
   }
 
+  async updateCategory(req, res) {
+    try {
+      const userId = req.user._id
+      const { id } = req.params
+      const { category } = req.body
+
+      const updatedTask = await TaskService.updateCategory(id, userId, category)
+
+      res.status(200).json({
+        message: 'Task category updated successfully',
+        task: updatedTask,
+      })
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error', error: error.message })
+    }
+  }
+
   async reorderTasks(req, res) {
     try {
       const userId = req.user._id

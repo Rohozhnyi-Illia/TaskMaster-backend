@@ -29,7 +29,6 @@ class AuthService {
         id: newUser._id,
         email: newUser.email,
         name: newUser.name,
-        message: 'User registered. Please verify your email using the code sent to your inbox',
       }
     } catch (error) {
       throw error
@@ -64,7 +63,6 @@ class AuthService {
         id: existingUser._id,
         email: existingUser.email,
         name: existingUser.name,
-        message: 'Email successfully verified',
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       }

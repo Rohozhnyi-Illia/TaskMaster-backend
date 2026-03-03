@@ -6,19 +6,12 @@ class NotificationController {
     try {
       const userId = req.user.id
       const notifications = await NotificationService.getNotifications(userId)
-      res.status(200).json(notifications)
+      res.status(200).json({ success: true, data: notifications })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error' })
-    }
-  }
-
-  async getNotificationsCount(req, res) {
-    try {
-      const userId = req.user.id
-      const count = await NotificationService.getNotificationsCount(userId)
-      res.status(200).json({ count })
-    } catch (error) {
-      res.status(500).json({ message: 'Internal server error' })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -26,9 +19,12 @@ class NotificationController {
     try {
       const { id } = req.params
       const updated = await NotificationService.markAsRead(id)
-      res.status(200).json(updated)
+      res.status(200).json({ success: true, data: updated })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error' })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -38,12 +34,18 @@ class NotificationController {
       const deletedNotification = await NotificationService.deleteNotification(id)
 
       if (!deletedNotification) {
-        return res.status(404).json({ message: 'Notification not found' })
+        return res.status(404).json({
+          success: false,
+          error: 'Notification not found',
+        })
       }
 
       res.status(200).json({ success: true, data: deletedNotification })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error' })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -55,10 +57,13 @@ class NotificationController {
 
       res.status(200).json({
         success: true,
-        deletedCount: result.deletedCount,
+        data: { deletedCount: result.deletedCount },
       })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error' })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -70,10 +75,13 @@ class NotificationController {
 
       res.status(200).json({
         success: true,
-        deletedCount: result.deletedCount,
+        data: { deletedCount: result.deletedCount },
       })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error' })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 }

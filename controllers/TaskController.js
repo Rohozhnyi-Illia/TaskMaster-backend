@@ -8,11 +8,11 @@ class TaskController {
       const userId = req.user._id
       const tasks = await TaskService.getAllTasks(userId)
 
-      res.status(200).json(tasks)
+      res.status(200).json({ success: true, data: tasks })
     } catch (error) {
       res.status(500).json({
-        message: 'Internal server error',
-        error: error.message,
+        success: false,
+        error: error.message || 'Internal server error',
       })
     }
   }
@@ -31,9 +31,12 @@ class TaskController {
         remainingTime,
       })
 
-      res.status(201).json(result)
+      res.status(201).json({ success: true, data: result })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error' })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -41,9 +44,12 @@ class TaskController {
     try {
       const { id } = req.params
       const deletedTask = await TaskService.deleteTask(id)
-      res.status(200).json({ message: 'Task deleted successfully', task: deletedTask })
+      res.status(200).json({ success: true, data: deletedTask })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error', error: error.message })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -56,11 +62,14 @@ class TaskController {
       const updatedTask = await TaskService.updateStatus(id, userId, status)
 
       res.status(200).json({
-        message: 'Task status updated successfully',
-        task: updatedTask,
+        success: true,
+        data: updatedTask,
       })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error', error: error.message })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -73,11 +82,14 @@ class TaskController {
       const updatedTask = await TaskService.updateCategory(id, userId, category)
 
       res.status(200).json({
-        message: 'Task category updated successfully',
-        task: updatedTask,
+        success: true,
+        data: updatedTask,
       })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error', error: error.message })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -89,10 +101,14 @@ class TaskController {
       await TaskService.reorderTasks(userId, orderedIds)
 
       res.status(200).json({
-        message: 'Tasks reordered successfully',
+        success: true,
+        data: { message: 'Reordered successfully' },
       })
     } catch (error) {
-      res.status(500).json({ message: error.message })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 }

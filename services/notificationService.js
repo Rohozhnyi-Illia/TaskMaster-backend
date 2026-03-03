@@ -99,19 +99,6 @@ class NotificationService {
     }
   }
 
-  static async getNotificationsCount(userId) {
-    try {
-      const count = await NotificationModel.countDocuments({
-        user: userId,
-        isDismissed: false,
-      })
-
-      return count
-    } catch (error) {
-      throw new Error('Error receiving number of notifications')
-    }
-  }
-
   static async markAsRead(notificationId) {
     try {
       const updatedNotification = await NotificationModel.findOneAndUpdate(

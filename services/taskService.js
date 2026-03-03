@@ -15,8 +15,7 @@ class TaskService {
     try {
       const { userId, task, status, category, deadline, remainingTime } = props
 
-      const lastTask = await TaskModel.findOne({ user: userId }).sort({ order: -1 })
-      const newOrder = lastTask ? lastTask.order + 1 : 0
+      await TaskModel.updateMany({ user: userId }, { $inc: { order: 1 } })
 
       const newTask = await TaskModel.create({
         user: userId,
@@ -25,7 +24,7 @@ class TaskService {
         category,
         deadline,
         remainingTime: remainingTime !== undefined ? remainingTime : 24,
-        order: newOrder,
+        order: 0,
       })
 
       return newTask

@@ -7,13 +7,18 @@ class AuthController {
       const result = await AuthService.register(email, password, name)
 
       res.status(200).json({
-        id: result.id,
-        email: result.email,
-        name: result.name,
-        message: result.message,
+        success: true,
+        data: {
+          id: result.id,
+          email: result.email,
+          name: result.name,
+        },
       })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error', error: error.message })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -30,9 +35,20 @@ class AuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
 
-      res.status(200).json(result)
+      res.status(200).json({
+        success: true,
+        data: {
+          id: result._id,
+          email: result.email,
+          name: result.name,
+          accessToken: result.accessToken,
+        },
+      })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error', error: error.message })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -41,9 +57,12 @@ class AuthController {
       const { email } = req.body
       const result = await AuthService.reVerifyEmail(email)
 
-      res.status(200).json(result)
+      res.status(200).json({ success: true, data: result })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error', error: error.message })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -61,14 +80,20 @@ class AuthController {
       })
 
       res.status(200).json({
-        id: result.id,
-        email: result.email,
-        accessToken: result.accessToken,
-        name: result.name,
-        emailActivated: result.emailActivated,
+        success: true,
+        data: {
+          id: result.id,
+          email: result.email,
+          accessToken: result.accessToken,
+          name: result.name,
+          emailActivated: result.emailActivated,
+        },
       })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error', error: error.message })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -77,9 +102,12 @@ class AuthController {
       const { email } = req.body
       const result = await AuthService.updatePassword(email)
 
-      return res.json(result)
+      return res.json({ success: true, data: result })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error', error: error.message })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -90,12 +118,15 @@ class AuthController {
         email,
         verifyCode,
         newPassword,
-        repeatPassword
+        repeatPassword,
       )
 
-      return res.json(result)
+      return res.json({ success: true, data: result })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error', error: error.message })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -112,9 +143,12 @@ class AuthController {
         path: '/',
       })
 
-      return res.json(result)
+      return res.json({ success: true, data: result })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error', error: error.message })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 
@@ -131,9 +165,12 @@ class AuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
 
-      return res.json(result)
+      return res.json({ success: true, data: result.accessToken })
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error', error: error.message })
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Internal server error',
+      })
     }
   }
 }

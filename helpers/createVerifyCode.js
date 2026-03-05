@@ -1,16 +1,16 @@
-const crypto = require('crypto')
+const crypto = require('crypto');
 
 const createVerifyCode = () => {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  const codeLength = 6
-  let code = ''
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const codeLength = 6;
+  let code = '';
 
   for (let i = 0; i < codeLength; i++) {
-    const index = crypto.randomInt(0, characters.length)
-    code += characters[index]
+    const index = crypto.randomInt(0, characters.length);
+    code += characters[index];
   }
 
-  return code
-}
+  return code;
+};
 
-module.exports = createVerifyCode
+module.exports = createVerifyCode;

@@ -1,21 +1,20 @@
-const TaskModel = require('../models/Task')
-const NotificationModel = require('../models/Notification')
+const TaskModel = require('../models/Task');
 
 class TaskService {
   async getAllTasks(userId) {
     try {
-      const tasks = await TaskModel.find({ user: userId }).sort({ order: 1 })
-      return tasks
+      const tasks = await TaskModel.find({ user: userId }).sort({ order: 1 });
+      return tasks;
     } catch (error) {
-      throw new Error('Failed to fetch tasks')
+      throw new Error('Failed to fetch tasks');
     }
   }
 
   async createTask(props) {
     try {
-      const { userId, task, status, category, deadline, remainingTime } = props
+      const { userId, task, status, category, deadline, remainingTime } = props;
 
-      await TaskModel.updateMany({ user: userId }, { $inc: { order: 1 } })
+      await TaskModel.updateMany({ user: userId }, { $inc: { order: 1 } });
 
       const newTask = await TaskModel.create({
         user: userId,
@@ -25,74 +24,74 @@ class TaskService {
         deadline,
         remainingTime: remainingTime !== undefined ? remainingTime : 24,
         order: 0,
-      })
+      });
 
-      return newTask
+      return newTask;
     } catch (error) {
-      throw new Error('Task addition error')
+      throw new Error('Task addition error');
     }
   }
 
   async deleteTask(taskId) {
     try {
-      const deletedTask = await TaskModel.findByIdAndDelete(taskId)
+      const deletedTask = await TaskModel.findByIdAndDelete(taskId);
       if (!deletedTask) {
-        throw new Error('Task not found')
+        throw new Error('Task not found');
       }
 
-      return deletedTask
+      return deletedTask;
     } catch (error) {
-      throw new Error('Task deleted error')
+      throw new Error('Task deleted error');
     }
   }
 
   async updateStatus(taskId, userId, newStatus) {
     try {
-      const allowedStatuses = ['Active', 'Done', 'InProgress', 'Archived']
+      const allowedStatuses = ['Active', 'Done', 'InProgress', 'Archived'];
       if (!allowedStatuses.includes(newStatus)) {
-        throw new Error('Invalid status')
+        throw new Error('Invalid status');
       }
 
-      const task = await TaskModel.findOne({ _id: taskId, user: userId })
+      const task = await TaskModel.findOne({ _id: taskId, user: userId });
       if (!task) {
-        throw new Error('Task not found or does not belong to the user')
+        throw new Error('Task not found or does not belong to the user');
       }
 
-      task.status = newStatus
-      await task.save()
+      task.status = newStatus;
+      await task.save();
 
-      return task
+      return task;
     } catch (error) {
-      throw new Error('Task status update error')
+      throw new Error('Task status update error');
     }
   }
 
   async updateCategory(taskId, userId, newCategory) {
     try {
-      const allowedCategories = ['Critical', 'High', 'Middle', 'Low']
+      const allowedCategories = ['Critical', 'High', 'Middle', 'Low'];
       if (!allowedCategories.includes(newCategory)) {
-        throw new Error('Invalid category')
+        throw new Error('Invalid category');
       }
 
-      const task = await TaskModel.findOne({ _id: taskId, user: userId })
+      const task = await TaskModel.findOne({ _id: taskId, user: userId });
       if (!task) {
-        throw new Error('Task not found or does not belong to the user')
+        throw new Error('Task not found or does not belong to the user');
       }
 
-      task.category = newCategory
-      await task.save()
+      task.category = newCategory;
+      await task.save();
 
-      return task
+      return task;
     } catch (error) {
-      console.error(error)
-      throw new Error('Category status update error')
+      console.error(error);
+      throw new Error('Category status update error');
     }
   }
 
   async reorderTasks(userId, orderedIds) {
     try {
       if (!Array.isArray(orderedIds)) {
-        throw new Error('Invalid data format')
+        throw new Error('Invalid data format');
       }
 
       const bulkOps = orderedIds.map((id, index) => ({
@@ -100,15 +99,15 @@ class TaskService {
           filter: { _id: id, user: userId },
           update: { order: index },
         },
-      }))
+      }));
 
-      await TaskModel.bulkWrite(bulkOps)
+      await TaskModel.bulkWrite(bulkOps);
 
-      return true
+      return true;
     } catch (error) {
-      throw new Error('Reorder failed')
+      throw new Error('Reorder failed');
     }
   }
 }
 
-module.exports = new TaskService()
+module.exports = new TaskService();

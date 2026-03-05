@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const TokenSchema = new mongoose.Schema(
   {
@@ -12,9 +12,9 @@ const TokenSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
-)
+  { timestamps: true },
+);
 
-TokenSchema.index({ user: 1 }, { unique: true })
+TokenSchema.index({ user: 1 }, { unique: true });
 
-module.exports = mongoose.model('Token', TokenSchema)
+module.exports = mongoose.model('Token', TokenSchema);

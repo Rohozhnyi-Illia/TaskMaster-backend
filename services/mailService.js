@@ -1,5 +1,5 @@
-const axios = require('axios')
-require('dotenv').config()
+const axios = require('axios');
+require('dotenv').config();
 
 class MailService {
   async sendMail(to, subject, action, code) {
@@ -18,10 +18,10 @@ class MailService {
             'api-key': process.env.BREVO_API_KEY,
             'Content-Type': 'application/json',
           },
-        }
-      )
-    } catch (err) {
-      throw err
+        },
+      );
+    } catch (error) {
+      throw new Error(error);
     }
   }
 
@@ -47,8 +47,8 @@ class MailService {
           </div>
         </div>
       </div>
-    `
+    `;
   }
 }
 
-module.exports = new MailService()
+module.exports = new MailService();

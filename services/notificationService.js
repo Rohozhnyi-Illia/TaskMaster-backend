@@ -1,32 +1,28 @@
-const TaskModel = require('../models/Task')
-const NotificationModel = require('../models/Notification')
+const TaskModel = require('../models/Task');
+const NotificationModel = require('../models/Notification');
 
 class NotificationService {
   static async checkDeadlines() {
-    const currentDate = new Date()
-    const warningDaysArray = [7, 3, 1]
+    const currentDate = new Date();
+    const warningDaysArray = [7, 3, 1];
 
     const tasksWithTimeTracker = await TaskModel.find({
       timeTracker: true,
       status: { $in: ['Active', 'InProgress'] },
       user: { $ne: null },
-    }).populate('user')
+    }).populate('user');
 
     for (const task of tasksWithTimeTracker) {
-      const differenceMilliseconds = task.deadline - currentDate
-      const differenceHours = differenceMilliseconds / (1000 * 60 * 60)
-      const differenceDays = Math.ceil(differenceHours / 24)
+      const differenceMilliseconds = task.deadline - currentDate;
+      const differenceHours = differenceMilliseconds / (1000 * 60 * 60);
+      const differenceDays = Math.ceil(differenceHours / 24);
 
       const existingOverdueNotification = await NotificationModel.findOne({
         task: task._id,
         type: 'overdue',
-      })
+      });
 
-      if (
-        differenceMilliseconds < 0 &&
-        task.status !== 'Done' &&
-        !existingOverdueNotification
-      ) {
+      if (differenceMilliseconds < 0 && task.status !== 'Done' && !existingOverdueNotification) {
         await NotificationModel.create({
           user: task.user._id,
           task: task._id,
@@ -34,7 +30,7 @@ class NotificationService {
           type: 'overdue',
           isRead: false,
           isDismissed: false,
-        })
+        });
       }
 
       for (const warningDay of warningDaysArray) {
@@ -42,7 +38,7 @@ class NotificationService {
           task: task._id,
           type: 'warning',
           'meta.warningDay': warningDay,
-        })
+        });
 
         if (
           differenceDays === warningDay &&
@@ -57,7 +53,7 @@ class NotificationService {
             meta: { warningDay: warningDay },
             isRead: false,
             isDismissed: false,
-          })
+          });
         }
       }
 
@@ -65,7 +61,7 @@ class NotificationService {
         task: task._id,
         type: 'reminder',
         'meta.reminderHour': task.remainingTime,
-      })
+      });
 
       if (
         task.remainingTime > 0 &&
@@ -81,7 +77,7 @@ class NotificationService {
           meta: { reminderHour: task.remainingTime },
           isRead: false,
           isDismissed: false,
-        })
+        });
       }
     }
   }
@@ -91,11 +87,11 @@ class NotificationService {
       const notificationsForUser = await NotificationModel.find({
         user: userId,
         isDismissed: false,
-      }).sort({ createdAt: -1 })
+      }).sort({ createdAt: -1 });
 
-      return notificationsForUser
+      return notificationsForUser;
     } catch (error) {
-      throw new Error('Error receiving notification')
+      throw new Error('Error receiving notification');
     }
   }
 
@@ -105,10 +101,10 @@ class NotificationService {
         { _id: notificationId, isDismissed: false },
         { isRead: true },
         { new: true },
-      )
-      return updatedNotification
+      );
+      return updatedNotification;
     } catch (error) {
-      throw new Error('Error marking notification as read')
+      throw new Error('Error marking notification as read');
     }
   }
 
@@ -118,10 +114,10 @@ class NotificationService {
         notificationId,
         { isDismissed: true, dismissedAt: new Date() },
         { new: true },
-      )
-      return updatedNotification
+      );
+      return updatedNotification;
     } catch (error) {
-      throw new Error('Error dismissing notification')
+      throw new Error('Error dismissing notification');
     }
   }
 
@@ -131,20 +127,20 @@ class NotificationService {
         user: userId,
         isRead: true,
         isDismissed: false,
-      })
+      });
 
-      if (!readNotifications.length) return { success: true, deletedCount: 0 }
+      if (!readNotifications.length) return { success: true, deletedCount: 0 };
 
-      const readNotificationIds = readNotifications.map((notification) => notification._id)
+      const readNotificationIds = readNotifications.map((notification) => notification._id);
 
       await NotificationModel.updateMany(
         { _id: { $in: readNotificationIds } },
         { isDismissed: true, dismissedAt: new Date() },
-      )
+      );
 
-      return { success: true, deletedCount: readNotifications.length }
+      return { success: true, deletedCount: readNotifications.length };
     } catch (error) {
-      throw new Error('Error dismissing read notifications')
+      throw new Error('Error dismissing read notifications');
     }
   }
 
@@ -153,22 +149,22 @@ class NotificationService {
       const allNotifications = await NotificationModel.find({
         user: userId,
         isDismissed: false,
-      })
+      });
 
-      if (!allNotifications.length) return { success: true, deletedCount: 0 }
+      if (!allNotifications.length) return { success: true, deletedCount: 0 };
 
-      const allNotificationIds = allNotifications.map((notification) => notification._id)
+      const allNotificationIds = allNotifications.map((notification) => notification._id);
 
       await NotificationModel.updateMany(
         { _id: { $in: allNotificationIds } },
         { isDismissed: true, dismissedAt: new Date() },
-      )
+      );
 
-      return { success: true, deletedCount: allNotifications.length }
+      return { success: true, deletedCount: allNotifications.length };
     } catch (error) {
-      throw new Error('Error dismissing all notifications')
+      throw new Error('Error dismissing all notifications');
     }
   }
 }
 
-module.exports = NotificationService
+module.exports = NotificationService;

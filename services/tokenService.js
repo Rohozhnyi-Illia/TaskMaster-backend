@@ -1,75 +1,78 @@
-const jwt = require('jsonwebtoken')
-const TokenModel = require('../models/Token')
+const jwt = require('jsonwebtoken');
+const TokenModel = require('../models/Token');
+const crypto = require('crypto');
 
 class TokenService {
   generateToken(payload) {
     try {
       const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
         expiresIn: '15m',
-      })
+      });
 
-      const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
-        expiresIn: '7d',
-      })
+      const refreshToken = jwt.sign(
+        { ...payload, jti: crypto.randomUUID() },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: '7d' },
+      );
 
-      return { accessToken, refreshToken }
+      return { accessToken, refreshToken };
     } catch (error) {
-      return null
+      return null;
     }
   }
 
   validateRefreshToken(token) {
     try {
-      return jwt.verify(token, process.env.JWT_REFRESH_SECRET)
+      return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
     } catch (error) {
-      return null
+      return null;
     }
   }
   async saveToken(userId, refreshToken) {
     try {
-      const tokenData = await TokenModel.findOne({ user: userId })
+      const tokenData = await TokenModel.findOne({ user: userId });
 
       if (tokenData) {
-        tokenData.refreshToken = refreshToken
-        return tokenData.save()
+        tokenData.refreshToken = refreshToken;
+        return tokenData.save();
       }
 
-      return await TokenModel.create({ user: userId, refreshToken })
+      return await TokenModel.create({ user: userId, refreshToken });
     } catch (error) {
-      return new Error(error)
+      return new Error(error);
     }
   }
 
   async removeToken(refreshToken) {
     try {
-      return await TokenModel.deleteOne({ refreshToken })
+      return await TokenModel.deleteOne({ refreshToken });
     } catch (error) {
-      return new Error(error)
+      return new Error(error);
     }
   }
 
   async findToken(refreshToken) {
     try {
-      return await TokenModel.findOne({ refreshToken })
+      return await TokenModel.findOne({ refreshToken });
     } catch (error) {
-      return new Error(error)
+      return new Error(error);
     }
   }
 
   async refreshToken(oldRefreshToken) {
     try {
-      const userTokens = await TokenModel.findOne({ refreshToken: oldRefreshToken })
-      if (!userTokens) return null
+      const userTokens = await TokenModel.findOne({ refreshToken: oldRefreshToken });
+      if (!userTokens) return null;
 
-      const tokens = this.generateToken({ id: userTokens.user })
-      userTokens.refreshToken = tokens.refreshToken
-      await userTokens.save()
+      const tokens = this.generateToken({ id: userTokens.user });
+      userTokens.refreshToken = tokens.refreshToken;
+      await userTokens.save();
 
-      return tokens
+      return tokens;
     } catch (error) {
-      return new Error(error)
+      return new Error(error);
     }
   }
 }
 
-module.exports = new TokenService()
+module.exports = new TokenService();

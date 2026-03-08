@@ -7,9 +7,10 @@ let mongoServer;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
-
   await mongoose.disconnect();
   await mongoose.connect(mongoServer.getUri(), { dbName: 'TaskMasterTest' });
+
+  jest.mock('../crons/checkDeadlines', () => jest.fn());
 });
 
 afterEach(async () => {
@@ -20,6 +21,7 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
+  jest.clearAllTimers();
   await mongoose.disconnect();
   await mongoServer.stop();
 });

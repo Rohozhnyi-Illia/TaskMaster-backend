@@ -6,13 +6,17 @@ class TaskService {
       const tasks = await TaskModel.find({ user: userId }).sort({ order: 1 });
       return tasks;
     } catch (error) {
-      throw new Error('Failed to fetch tasks');
+      throw new Error(error);
     }
   }
 
   async createTask(props) {
     try {
       const { userId, task, status, category, deadline, remainingTime } = props;
+
+      if (!task || !status || !category || !deadline) {
+        throw new Error('Incomplete data');
+      }
 
       await TaskModel.updateMany({ user: userId }, { $inc: { order: 1 } });
 
@@ -28,7 +32,7 @@ class TaskService {
 
       return newTask;
     } catch (error) {
-      throw new Error('Task addition error');
+      throw new Error(error);
     }
   }
 
@@ -41,7 +45,7 @@ class TaskService {
 
       return deletedTask;
     } catch (error) {
-      throw new Error('Task deleted error');
+      throw new Error(error);
     }
   }
 
@@ -62,7 +66,7 @@ class TaskService {
 
       return task;
     } catch (error) {
-      throw new Error('Task status update error');
+      throw new Error(error);
     }
   }
 
@@ -83,8 +87,7 @@ class TaskService {
 
       return task;
     } catch (error) {
-      console.error(error);
-      throw new Error('Category status update error');
+      throw new Error(error);
     }
   }
 
@@ -105,7 +108,7 @@ class TaskService {
 
       return true;
     } catch (error) {
-      throw new Error('Reorder failed');
+      throw new Error(error);
     }
   }
 }

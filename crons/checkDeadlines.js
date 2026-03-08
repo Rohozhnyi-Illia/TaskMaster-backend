@@ -7,6 +7,7 @@ function initDeadlineChecker() {
       await NotificationService.checkDeadlines();
     } catch (err) {
       console.error('[CRON] Error checking deadlines:', err);
+      throw new Error(err);
     }
   });
 }

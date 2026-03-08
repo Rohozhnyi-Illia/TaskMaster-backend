@@ -7,10 +7,6 @@ router.get('/', authMiddleware, (req, res) => {
   NotificationController.getUserNotifications(req, res);
 });
 
-router.get('/count', authMiddleware, (req, res) => {
-  NotificationController.getNotificationsCount(req, res);
-});
-
 router.patch('/:id/read', authMiddleware, (req, res) => {
   NotificationController.markAsRead(req, res);
 });

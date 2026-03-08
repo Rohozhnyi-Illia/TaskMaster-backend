@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../app');
-const createUser = require('../createUser');
+const createUser = require('../helpers/createUser');
 
 describe('Update password flow', () => {
   it('Change password', async () => {

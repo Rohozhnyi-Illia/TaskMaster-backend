@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../app');
-const createUser = require('../createUser');
+const createUser = require('../helpers/createUser');
 const createVerifyCode = require('../../helpers/createVerifyCode');
 
 describe('Verification flow', () => {

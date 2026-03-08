@@ -1,7 +1,7 @@
 # TaskMaster Backend
 
 Backend API for managing users, tasks, and notifications.  
-Built with **Node.js**, **Express**, and **MongoDB** — now with **email verification and password recovery**.
+Built with **Node.js**, **Express**, and **MongoDB** — now with **email verification, password recovery, automated testing, and code quality tools**
 
 ---
 
@@ -13,6 +13,8 @@ Built with **Node.js**, **Express**, and **MongoDB** — now with **email verifi
 - Create, update, and delete tasks
 - Task notifications (reminders, deadlines, overdue alerts)
 - JWT-based authentication (access + refresh tokens)
+- Automated API testing (Jest + Supertest)
+- Code quality tools (ESLint + Prettier)
 - Health check route (`/ping`) for uptime monitoring (keeps server and DB awake)
 - Secure verification code generation using Node.js `crypto` (6-digit code, expires in 15 minutes)
 
@@ -27,6 +29,10 @@ Built with **Node.js**, **Express**, and **MongoDB** — now with **email verifi
 - **crypto** — secure code generation for email verification
 - **dotenv** — environment configuration
 - **nodemailer + Brevo (Sendinblue)** — email delivery
+- **Jest + Supertest** — API testing
+  **MongoMemoryServer** — in-memory MongoDB for isolated tests
+- **ESLint** — code linting
+- **Prettier** — code formatting
 
 ---
 
@@ -39,6 +45,8 @@ npm install
 cp .env.example .env
 ```
 
+---
+
 ## Running
 
 ```bash
@@ -47,6 +55,22 @@ npm start       # production mode
 ```
 
 Default server URL: http://localhost:9000.
+
+---
+
+### Scripts
+
+```bash
+npm start        # start server in production
+npm run dev      # start server in development mode
+npm run lint     # run ESLint
+npm run lint:fix # fix lint issues automatically
+npm run format   # format code with Prettier
+npm test         # run tests
+npm run coverage # generate test coverage report
+```
+
+---
 
 ## API Endpoints
 
@@ -67,8 +91,10 @@ Default server URL: http://localhost:9000.
 
 - `GET /` — get all tasks for the current user
 - `POST /` — create a new task
-- `PATCH /:id/status` — update task status (Active / Done / In-progress / Archived / Blocked)
 - `DELETE /:id` — delete a task
+- `PATCH /:id/status` — update task status (Active / Done / In-progress / Archived / Blocked)
+- `PATCH /:id/category` - update task category (Critical / High / Middle / Low)
+- `PATCH /reorder` - change the order of tasks
 
 ---
 
@@ -76,13 +102,45 @@ Default server URL: http://localhost:9000.
 
 - `GET /` — get user notifications
 - `PATCH /:id/read` — mark notification as read
-- `DELETE /:id` — delete a notification
+- `PATCH /readAll` — delete all read notifications
+- `PATCH /deleteAll` — delete all notifications
+- `DELETE /:id` — delete a single notification
 
 ---
 
 ### Utility Routes
 
 - `/ping` — checks whether the server and MongoDB are working (used by a third-party service)
+
+---
+
+### Testing
+
+The project includes integration tests for the API using **Jest** and **Supertest**.
+
+Tests run against an **in-memory MongoDB instance (MongoMemoryServer)**, ensuring  
+test isolation and preventing interaction with the production database.
+
+```bash
+Statements : 92.33%
+Branches   : 71.52%
+Functions  : 97.33%
+Lines      : 92.79%
+
+Test Suites: 17
+Tests: 50
+Status: All passing
+```
+
+Tests cover:
+
+- Authentication flow
+- Token refresh
+- Task creation and management
+- Notifications
+- Email verification
+- Password recovery
+- Authorization middleware
 
 ---
 
@@ -95,13 +153,26 @@ Default server URL: http://localhost:9000.
 5. On success — account status updates to emailActivated: true.
 6. The same flow is used for password recovery.
 
+---
+
+### Code Quality
+
+The project enforces consistent code style using:
+
+- ESLint — static code analysis
+- Prettier — automatic code formatting
+
+This ensures consistent and maintainable code across the project.
+
+---
+
 ## Notes
 
-- Verification codes expire after 15 minutes.
-- Integrated with Brevo for production email delivery.
-- /ping route allows uptime services (e.g. cron-job) to keep server and DB awake.
-- Local SMTP configuration available for development.
-- Project version v2.0.0 — includes email verification and notifications.
+- Verification codes expire after 15 minutes
+- Integrated with Brevo for production email delivery
+- /ping route allows uptime services to keep server and DB awake
+- Automated tests ensure API reliability
+- Project version v2.1.0
 
 ---
 

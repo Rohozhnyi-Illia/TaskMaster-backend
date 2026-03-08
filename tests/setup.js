@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
 jest.setTimeout(30000);

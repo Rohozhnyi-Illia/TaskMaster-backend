@@ -133,22 +133,22 @@ class AuthController {
   async logout(req, res) {
     try {
       const { refreshToken } = req.cookies;
-      const result = await AuthService.logout(refreshToken);
+
+      if (refreshToken) {
+        await AuthService.logout(refreshToken);
+      }
 
       res.clearCookie('refreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-        domain: process.env.NODE_ENV === 'production' ? '.yourdomain.com' : undefined,
+
         path: '/',
       });
 
-      return res.json({ success: true, data: result });
+      return res.json({ success: true, message: 'Logged out' });
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        error: error.message || 'Internal server error',
-      });
+      return res.json({ success: false, error: error.message || 'Logout error' });
     }
   }
 

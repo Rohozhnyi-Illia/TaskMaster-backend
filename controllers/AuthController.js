@@ -142,13 +142,12 @@ class AuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-
         path: '/',
       });
 
-      return res.json({ success: true, message: 'Logged out' });
+      return res.json({ success: true });
     } catch (error) {
-      return res.json({ success: false, error: error.message || 'Logout error' });
+      return res.json({ success: false, error: error.message });
     }
   }
 

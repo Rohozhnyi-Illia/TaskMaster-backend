@@ -192,12 +192,11 @@ class AuthService {
 
   async logout(refreshToken) {
     try {
-      if (!refreshToken) throw new Error('No token provided');
       await TokenService.removeToken(refreshToken);
 
       return { message: 'Successfully logged out' };
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error.message);
     }
   }
 

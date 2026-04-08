@@ -1,8 +1,10 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const app = require('./app');
 const initDeadlineChecker = require('./crons/checkDeadlines');
 
-const PORT = process.env.PORT || 2000;
+const PORT = process.env.PORT;
+if (!PORT) throw new Error('PORT is not defined in environment variables');
 
 const startServer = async () => {
   try {

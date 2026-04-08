@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const app = require('./app');
 const initDeadlineChecker = require('./crons/checkDeadlines');
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 2000;
 
 const startServer = async () => {
   try {
@@ -11,7 +11,7 @@ const startServer = async () => {
     initDeadlineChecker();
   } catch (error) {
     console.error('Failed to start server:', error);
-    throw new Error(error);
+    throw error;
   }
 };
 
